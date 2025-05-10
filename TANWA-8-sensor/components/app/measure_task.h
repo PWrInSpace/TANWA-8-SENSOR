@@ -1,3 +1,3 @@
 #include <stdio.h>
 
-void start_measure(void); // Starting mesurement proces
+void main_task(void); // Starting measurement proces
