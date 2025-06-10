@@ -27,7 +27,7 @@
 #define PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE 350.0f
 
 #define PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE 0.33f
-#define PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE 2.80f
+#define PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE 3.0f
 
 #define PRESSURE_DRIVER_TANWA_CONFIG(X)                         \
   {                                                             \
