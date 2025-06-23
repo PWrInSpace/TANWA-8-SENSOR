@@ -11,6 +11,7 @@
 ///===-----------------------------------------------------------------------------------------===//
 
 #include "board_config.h"
+#include "esp_log.h"
 
 #include "driver/gpio.h"
 
@@ -72,9 +73,46 @@ esp_err_t board_config_init(void) {
         ESP_LOGE(TAG, "Console initialization failed");
         return err;
     }
-    return ESP_OK;
 
     //*********** ADD HARDWARE CONFIGURATION HERE ***********//
+
+    // INIT THERMOCOUPLES
+    uint8_t fault_val;
+
+    ESP_LOGI(TAG, "Thermocouple initialization...");
+    max31856_init(&TANWA_hardware.thermocouple[0], THERMOCOUPLE_CS1);
+    max31856_init(&TANWA_hardware.thermocouple[1], THERMOCOUPLE_CS2);
+    ESP_LOGI(TAG, "Thermocouple set type...");
+    thermocouple_set_type(&TANWA_hardware.thermocouple[0], MAX31856_TCTYPE_K);
+    thermocouple_set_type(&TANWA_hardware.thermocouple[1], MAX31856_TCTYPE_K);
+    ESP_LOGI(TAG, "Thermocouple read fault...");
+    fault_val = thermocouple_read_fault(&TANWA_hardware.thermocouple[0], true);
+    if (fault_val == 1)
+    {
+        return ESP_FAIL;
+    }
+    fault_val = thermocouple_read_fault(&TANWA_hardware.thermocouple[1], true);
+    if (fault_val == 1)
+    {
+        return ESP_FAIL;
+    }
+
+    // INIT PRESSURE SENSOR
+    pressure_driver_status_t ret_press;
+    ret_press = pressure_driver_init(&(TANWA_utility.pressure_driver));
+    if (ret_press != PRESSURE_DRIVER_OK)
+    {
+        ESP_LOGE(TAG, "Failed to initialize pressure driver");
+        return ESP_FAIL;
+    }
+    else
+    {
+        ESP_LOGI(TAG, "Pressure driver initialized");
+    }
+
+    return ESP_OK;
+
+
 
     
 }
