@@ -13,11 +13,16 @@
 #include "esp_log.h"
 #include "esp_system.h"
 
+
+#include "console.h"
+
 #include "console_config.h"
 
 #define TAG "CONSOLE_CONFIG"
 
+
 #include "esp_console.h"
+
 
 // example function to reset the device
 int reset_device(int argc, char **argv) {
@@ -34,6 +39,7 @@ int reset_device(int argc, char **argv) {
  {"reset", "Reset the device", NULL, reset_device, NULL},
  };
 
+
  esp_console_config_t console_config = {
     .max_cmdline_args = 8,
     .max_cmdline_length = 256,
@@ -44,6 +50,12 @@ esp_err_t console_config_init() {
     esp_err_t ret;
     ret = esp_console_init(&console_config);
     ret = esp_console_register_help_command();
+
+esp_err_t console_config_init() {
+    esp_err_t ret;
+    ret = console_init();
+    ret = console_register_commands(cmd, sizeof(cmd) / sizeof(cmd[0]));
+
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "%s", esp_err_to_name(ret));
         return ret;

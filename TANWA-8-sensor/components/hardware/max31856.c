@@ -2,7 +2,6 @@
 #include "driver/spi_master.h"
 #include "driver/gpio.h"
 
-
 const char *TAG = "MAX31856";
 
 void max31856_write_register(spi_device_handle_t spi_handle, uint8_t cs_pin, uint8_t address, uint8_t data) {
@@ -241,7 +240,11 @@ bool max31856_init(max31856_cfg *max31856, uint8_t cs_pin) {
         .queue_size = 1,
     };
 
+
     ret=spi_bus_add_device(SPI3_HOST, &devcfg, &max31856->spi);
+
+    ret=spi_bus_add_device(HSPI_HOST, &devcfg, &max31856->spi);
+
     ESP_ERROR_CHECK(ret);
 
     // Assert on All Faults
