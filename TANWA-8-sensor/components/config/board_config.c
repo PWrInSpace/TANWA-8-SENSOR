@@ -10,6 +10,10 @@
 /// and available commands for debugging/testing purposes.
 ///===-----------------------------------------------------------------------------------------===//
 
+#include <stdbool.h>
+#include <stdint.h>
+
+
 #include "board_config.h"
 
 #include "driver/gpio.h"
@@ -19,12 +23,43 @@
 
 #include "esp_log.h"
 
+#include "esp_err.h"
+
+#include "../mcu_config/mcu_gpio_config.h"
+#include "../mcu_config/mcu_twai_config.h"
+
 #include "mcu_gpio_config.h"
 #include "mcu_twai_config.h"
+
 #include "can_config.h"
 #include "console_config.h"
 
 #define TAG "BOARD_CONFIG"
+
+//Hardware include
+/*
+#include "../mcu_config/mcu_twai_config.h"
+#include "esp_log.h"
+#include "../hardware/pressure_driver.h"
+// #include "mcu_gpio_config.h"
+// #include "mcu_i2c_config.h"
+#include "../mcu_config/mcu_spi_config.h"
+#include "pinout.h"
+
+#define TAG "TANWA_CONFIG"
+#define IOEXP_MODE (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
+
+#define CONFIG_I2C_TMP1075_TS1_ADDR 0x4F // TODO: ADD ADRESS1
+#define CONFIG_I2C_TMP1075_TS2_ADDR 0x4E // TODO: ADD ADRESS2
+
+#include "../hardware/ads1115.h"
+#include "../hardware/pressure_driver.h"
+//#include "tmp1075.h"
+#include "../hardware/max31856.h"
+
+//#define TMP1075_QUANTITY 1
+#define MAX31856_QUANTITY 3
+*/
 
 void _led_delay(uint32_t _ms) {
     vTaskDelay(_ms / portTICK_PERIOD_MS);
@@ -35,10 +70,40 @@ board_config_t config = {
     .status_led = {
         ._gpio_set_level = _mcu_gpio_set_level,
         ._delay = _led_delay,
+
+        .gpio_num = LED_GPIO_INDEX,
+        .drive = LED_DRIVE_POSITIVE,
+        .state = LED_STATE_OFF, 
+    },/*
+        .tmp1075 = {
+        {
+            ._i2c_write = _mcu_i2c_write,
+            ._i2c_read = _mcu_i2c_read,
+            .i2c_address = CONFIG_I2C_TMP1075_TS1_ADDR,
+            .config_register = 0,
+        },
+        // {
+        //     ._i2c_write = _mcu_i2c_write,
+        //     ._i2c_read = _mcu_i2c_read,
+        //     .i2c_address = CONFIG_I2C_TMP1075_TS2_ADDR,
+        //     .config_register = 0,
+        // },5RDFXGTQ1\13|3`wx
+    },
+    ads1115 = {
+        ._i2c_write = _mcu_i2c_write,
+        ._i2c_read = _mcu_i2c_read,
+        .i2c_address = 0x49,
+    },
+    pressure_driver = PRESSURE_DRIVER_TANWA_CONFIG(&TANWA_hardware.ads1115),
+
+    
+*/
+
         .gpio_num = CONFIG_GPIO_LED,
         .drive = LED_DRIVE_POSITIVE,
         .state = LED_STATE_OFF, 
     },
+
 };
 
 esp_err_t board_config_init(void) {
@@ -75,6 +140,53 @@ esp_err_t board_config_init(void) {
     return ESP_OK;
 
     //*********** ADD HARDWARE CONFIGURATION HERE ***********//
+
+    // INIT THERMOCOUPLES
+
+
+    /*
+    uint8_t fault_val;
+
+    ESP_LOGI(TAG, "Thermocouple initialization...");
+    max31856_init(&TANWA_hardware.thermocouple[0], THERMOCOUPLE_CS1);
+    max31856_init(&TANWA_hardware.thermocouple[1], THERMOCOUPLE_CS2);
+    max31856_init(&TANWA_hardware.thermocouple[2], THERMOCOUPLE_CS3);
+    ESP_LOGI(TAG, "Thermocouple set type...");
+    thermocouple_set_type(&TANWA_hardware.thermocouple[0], MAX31856_TCTYPE_K);
+    thermocouple_set_type(&TANWA_hardware.thermocouple[1], MAX31856_TCTYPE_K);
+    thermocouple_set_type(&TANWA_hardware.thermocouple[2], MAX31856_TCTYPE_K);
+    ESP_LOGI(TAG, "Thermocouple read fault...");
+    fault_val = thermocouple_read_fault(&TANWA_hardware.thermocouple[0], true);
+    if (fault_val == 1)
+    {
+        return ESP_FAIL;
+    }
+    fault_val = thermocouple_read_fault(&TANWA_hardware.thermocouple[1], true);
+    if (fault_val == 1)
+    {
+        return ESP_FAIL;
+    }
+    fault_val = thermocouple_read_fault(&TANWA_hardware.thermocouple[2], true);
+    if (fault_val == 1)
+    {
+        return ESP_FAIL;
+    }
+
+    // INIT PRESSURE SENSOR
+    pressure_driver_status_t ret_press;
+    ret_press = pressure_driver_init(&(pressure_driver));
+    if (ret_press != PRESSURE_DRIVER_OK)
+    {
+        ESP_LOGE(TAG, "Failed to initialize pressure driver");
+        return ESP_FAIL;
+    }
+    else
+    {
+        ESP_LOGI(TAG, "Pressure driver initialized");
+    }
+
+    return ESP_OK;
+    */
 
     
 }

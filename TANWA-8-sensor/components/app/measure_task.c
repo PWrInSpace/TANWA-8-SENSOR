@@ -4,6 +4,7 @@
 #include "esp_log.h"
 #include "esp_err.h"
 
+
 #include "driver/gpio.h"
 
 #include "freertos/FreeRTOS.h"
@@ -13,8 +14,8 @@
 
 void measure_task(void){
 
-    TickType_t xLastWakeTime = xTaskGetTickCount();
 
+    TickType_t xLastWakeTime = xTaskGetTickCount();
    while(1){
 
    }

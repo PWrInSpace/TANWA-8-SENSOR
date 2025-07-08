@@ -13,7 +13,10 @@
 #ifndef PWRINSPACE_BOARD_CONFIG_H
 #define PWRINSPACE_BOARD_CONFIG_H
 
+#include "../hardware/led_driver.h"
+=======
 #include "led_driver.h"
+
 #include "esp_err.h"
 
 typedef struct {
