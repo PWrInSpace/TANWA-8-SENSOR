@@ -9,8 +9,10 @@
 /// This file contains declaration of the system console configuration, including initialization
 /// and available commands for debugging/testing purposes.
 ///===-----------------------------------------------------------------------------------------===//
+
 #include <stdbool.h>
 #include <stdint.h>
+
 
 #include "board_config.h"
 
@@ -20,7 +22,9 @@
 #include "freertos/task.h"
 
 #include "esp_log.h"
+
 #include "esp_err.h"
+
 
 #include "mcu_gpio_config.h"
 #include "mcu_twai_config.h"
@@ -28,6 +32,7 @@
 #include "console_config.h"
 
 #define TAG "BOARD_CONFIG"
+
 
 
 //Hardware include
@@ -58,6 +63,7 @@ board_config_t config = {
     .status_led = {
         ._gpio_set_level = _mcu_gpio_set_level,
         ._delay = _led_delay,
+
         .gpio_num = LED_GPIO_INDEX,
         .drive = LED_DRIVE_POSITIVE,
         .state = LED_STATE_OFF, 
@@ -78,6 +84,11 @@ board_config_t config = {
 
     
 
+        .gpio_num = CONFIG_GPIO_LED,
+        .drive = LED_DRIVE_POSITIVE,
+        .state = LED_STATE_OFF, 
+    },
+
 };
 
 esp_err_t board_config_init(void) {
@@ -93,12 +104,19 @@ esp_err_t board_config_init(void) {
 
     //err = mcu_twai_init();
 
+    err = mcu_twai_init();
+
+
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "TWAI initialization failed");
         return err;
     }
 
+
     //err = can_config_init();
+
+    err = can_config_init();
+
 
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "CAN initialization failed");
@@ -114,6 +132,7 @@ esp_err_t board_config_init(void) {
     return ESP_OK;
 
     //*********** ADD HARDWARE CONFIGURATION HERE ***********//
+
     // INIT THERMOCOUPLES
 
 
@@ -158,5 +177,5 @@ esp_err_t board_config_init(void) {
     }
 
     return ESP_OK;
-    
+
 }
