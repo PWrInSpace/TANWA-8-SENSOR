@@ -9,9 +9,28 @@
 #include "freertos/queue.h"
 #include "freertos/semphr.h"
 
-void measure_task(void){
+#include "tmp1075.h"
 
-   while(1){
+float temperature;
+static TaskHandle_t measure_task_handle = NULL;
+esp_err_t measure_task_init(void) {
+    
+    if(xTaskCreatePinnedToCore(measure_task, "measure_task", 4096, NULL, 0, &measure_task_handle, 0) == pdPASS) {
+        ESP_LOGI("MEASURE_TASK", "Measure task created successfully");
+    } else {
+        ESP_LOGE("MEASURE_TASK", "Failed to create measure task");
+        return ESP_FAIL;
+    }
 
-   }
+    return ESP_OK;
 }
+
+void measure_task(void*){
+
+    while(1){
+        tmp1075_status_t ret = tmp1075_get_temp_celsius(&(config.tmp1075), &temperature);
+        printf("TEMP_STAT = %f", temperature);
+        vTaskDelay(500);
+    }
+}
+   

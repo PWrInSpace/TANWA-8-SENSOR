@@ -22,8 +22,8 @@
 #include "esp_log.h"
 #include "esp_err.h"
 
-#include "../mcu_config/mcu_gpio_config.h"
-#include "../mcu_config/mcu_twai_config.h"
+#include "mcu_gpio_config.h"
+#include "mcu_twai_config.h"
 #include "can_config.h"
 #include "console_config.h"
 
@@ -31,29 +31,24 @@
 
 
 //Hardware include
-/*
-#include "../mcu_config/mcu_twai_config.h"
+
+#include "mcu_twai_config.h"
 #include "esp_log.h"
-#include "../hardware/pressure_driver.h"
-// #include "mcu_gpio_config.h"
-// #include "mcu_i2c_config.h"
-#include "../mcu_config/mcu_spi_config.h"
+#include "pressure_driver.h"
+#include "mcu_gpio_config.h"
+#include "mcu_i2c_config.h"
+#include "mcu_spi_config.h"
 #include "pinout.h"
 
-#define TAG "TANWA_CONFIG"
 #define IOEXP_MODE (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
 
-#define CONFIG_I2C_TMP1075_TS1_ADDR 0x4F // TODO: ADD ADRESS1
+#define CONFIG_I2C_TMP1075_TS1_ADDR 0x4C // TODO: ADD ADRESS1
 #define CONFIG_I2C_TMP1075_TS2_ADDR 0x4E // TODO: ADD ADRESS2
 
-#include "../hardware/ads1115.h"
-#include "../hardware/pressure_driver.h"
-//#include "tmp1075.h"
-#include "../hardware/max31856.h"
+#include "ads1115.h"
+#include "pressure_driver.h"
+#include "max31856.h"
 
-//#define TMP1075_QUANTITY 1
-#define MAX31856_QUANTITY 3
-*/
 void _led_delay(uint32_t _ms) {
     vTaskDelay(_ms / portTICK_PERIOD_MS);
 }
@@ -66,30 +61,23 @@ board_config_t config = {
         .gpio_num = LED_GPIO_INDEX,
         .drive = LED_DRIVE_POSITIVE,
         .state = LED_STATE_OFF, 
-    },/*
-        .tmp1075 = {
-        {
-            ._i2c_write = _mcu_i2c_write,
-            ._i2c_read = _mcu_i2c_read,
-            .i2c_address = CONFIG_I2C_TMP1075_TS1_ADDR,
-            .config_register = 0,
-        },
-        // {
-        //     ._i2c_write = _mcu_i2c_write,
-        //     ._i2c_read = _mcu_i2c_read,
-        //     .i2c_address = CONFIG_I2C_TMP1075_TS2_ADDR,
-        //     .config_register = 0,
-        // },5RDFXGTQ1\13|3`wx
     },
-    ads1115 = {
+    .tmp1075 = {
+    
+        ._i2c_write = _mcu_i2c_write,
+        ._i2c_read = _mcu_i2c_read,
+        .i2c_address = CONFIG_I2C_TMP1075_TS1_ADDR,
+        .config_register = 0,
+    },
+    .ads1115 = {
         ._i2c_write = _mcu_i2c_write,
         ._i2c_read = _mcu_i2c_read,
         .i2c_address = 0x49,
     },
-    pressure_driver = PRESSURE_DRIVER_TANWA_CONFIG(&TANWA_hardware.ads1115),
+    .pressure_driver = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115),
 
     
-*/
+
 };
 
 esp_err_t board_config_init(void) {
@@ -103,14 +91,14 @@ esp_err_t board_config_init(void) {
         return err;
     }
 
-    err = mcu_twai_init();
+    //err = mcu_twai_init();
 
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "TWAI initialization failed");
         return err;
     }
 
-    err = can_config_init();
+    //err = can_config_init();
 
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "CAN initialization failed");
@@ -129,29 +117,28 @@ esp_err_t board_config_init(void) {
     // INIT THERMOCOUPLES
 
 
-    /*
     uint8_t fault_val;
 
     ESP_LOGI(TAG, "Thermocouple initialization...");
-    max31856_init(&TANWA_hardware.thermocouple[0], THERMOCOUPLE_CS1);
-    max31856_init(&TANWA_hardware.thermocouple[1], THERMOCOUPLE_CS2);
-    max31856_init(&TANWA_hardware.thermocouple[2], THERMOCOUPLE_CS3);
+    max31856_init(&config.thermocouple[0], THERMOCOUPLE_CS1);
+    max31856_init(&config.thermocouple[1], THERMOCOUPLE_CS2);
+    max31856_init(&config.thermocouple[2], THERMOCOUPLE_CS3);
     ESP_LOGI(TAG, "Thermocouple set type...");
-    thermocouple_set_type(&TANWA_hardware.thermocouple[0], MAX31856_TCTYPE_K);
-    thermocouple_set_type(&TANWA_hardware.thermocouple[1], MAX31856_TCTYPE_K);
-    thermocouple_set_type(&TANWA_hardware.thermocouple[2], MAX31856_TCTYPE_K);
+    thermocouple_set_type(&config.thermocouple[0], MAX31856_TCTYPE_K);
+    thermocouple_set_type(&config.thermocouple[1], MAX31856_TCTYPE_K);
+    thermocouple_set_type(&config.thermocouple[2], MAX31856_TCTYPE_K);
     ESP_LOGI(TAG, "Thermocouple read fault...");
-    fault_val = thermocouple_read_fault(&TANWA_hardware.thermocouple[0], true);
+    fault_val = thermocouple_read_fault(&config.thermocouple[0], true);
     if (fault_val == 1)
     {
         return ESP_FAIL;
     }
-    fault_val = thermocouple_read_fault(&TANWA_hardware.thermocouple[1], true);
+    fault_val = thermocouple_read_fault(&config.thermocouple[1], true);
     if (fault_val == 1)
     {
         return ESP_FAIL;
     }
-    fault_val = thermocouple_read_fault(&TANWA_hardware.thermocouple[2], true);
+    fault_val = thermocouple_read_fault(&config.thermocouple[2], true);
     if (fault_val == 1)
     {
         return ESP_FAIL;
@@ -159,7 +146,7 @@ esp_err_t board_config_init(void) {
 
     // INIT PRESSURE SENSOR
     pressure_driver_status_t ret_press;
-    ret_press = pressure_driver_init(&(pressure_driver));
+    ret_press = pressure_driver_init(&(config.pressure_driver));
     if (ret_press != PRESSURE_DRIVER_OK)
     {
         ESP_LOGE(TAG, "Failed to initialize pressure driver");
@@ -171,6 +158,5 @@ esp_err_t board_config_init(void) {
     }
 
     return ESP_OK;
-    */
     
 }

@@ -14,7 +14,7 @@
 
 #include "esp_err.h"
 
-void setup_task(void *arg);
+void setup_task();
 esp_err_t setup_task_init(void);
 esp_err_t setup_task_deinit(void);
 

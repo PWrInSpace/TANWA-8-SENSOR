@@ -1,0 +1,13 @@
+#pragma once
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
+#include "stdbool.h"
+
+
+typedef struct {
+    float temperature[3];
+
+} BoardData_t;
+
+extern BoardData_t BoardData;
+extern SemaphoreHandle_t BoardDataSemaphore;
