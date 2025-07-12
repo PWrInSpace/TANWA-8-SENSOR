@@ -3,6 +3,7 @@
 
 #include "esp_log.h"
 #include "esp_err.h"
+#include "esp_mac.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -10,8 +11,11 @@
 #include "freertos/semphr.h"
 
 #include "tmp1075.h"
+#include "pressure_driver.h"
+#include "max31856.h"
 
 float temperature;
+float pressure;
 static TaskHandle_t measure_task_handle = NULL;
 esp_err_t measure_task_init(void) {
     
@@ -28,9 +32,35 @@ esp_err_t measure_task_init(void) {
 void measure_task(void*){
 
     while(1){
-        tmp1075_status_t ret = tmp1075_get_temp_celsius(&(config.tmp1075), &temperature);
-        printf("TEMP_STAT = %f", temperature);
-        vTaskDelay(500);
+     //  printf("Temperature sensor\n");
+        //tmp1075_status_t ret = tmp1075_get_temp_celsius(&(config.tmp1075), &temperature);
+       // printf("TEMP_STAT = %f\n", temperature);
+
+      //  printf("###################################################################\n");
+      //  printf("Pressure sensor\n");
+      //  pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_1,&pressure);
+      //  printf("PRESS_STAT_1 = %f\n", pressure);
+
+      //  pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_2,&pressure);
+      //  printf("PRESS_STAT_2 = %f\n", pressure);
+
+      //  pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_3,&pressure);
+      //  printf("PRESS_STAT_3 = %f\n", pressure);
+
+      //  pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_4,&pressure);
+      //  printf("PRESS_STAT_4 = %f\n", pressure);
+
+      //  printf("###################################################################\n");
+      //  printf("Thermocouple\n");
+
+        float temp1 = (thermocouple_read_temperature(&config.thermocouple[0]));
+       float temp2 = (thermocouple_read_temperature(&config.thermocouple[1]));
+        float temp3 = (thermocouple_read_temperature(&config.thermocouple[2]));
+        
+        printf("Termocouple 1 = %f\n", temp1);
+       printf("Termocouple 2 = %f\n", temp2);
+        printf("Termocouple 3 = %f\n", temp3);
+        vTaskDelay(50);
     }
 }
    

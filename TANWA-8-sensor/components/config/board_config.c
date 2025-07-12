@@ -111,20 +111,35 @@ esp_err_t board_config_init(void) {
         ESP_LOGE(TAG, "Console initialization failed");
         return err;
     }
-    return ESP_OK;
+        err = mcu_i2c_init();
 
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "I2C failed");
+        return err;
+    }
+    ESP_LOGI(TAG, "I2C init successful");
+
+    
+      err = mcu_spi_init();
+
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "SPI failed");
+        return err;
+    }
+    ESP_LOGI(TAG, "SPI init successful");
     //*********** ADD HARDWARE CONFIGURATION HERE ***********//
     // INIT THERMOCOUPLES
 
-
     uint8_t fault_val;
-
+    
     ESP_LOGI(TAG, "Thermocouple initialization...");
     max31856_init(&config.thermocouple[0], THERMOCOUPLE_CS1);
-    max31856_init(&config.thermocouple[1], THERMOCOUPLE_CS2);
-    max31856_init(&config.thermocouple[2], THERMOCOUPLE_CS3);
+    ESP_LOGI(TAG, "Thermocouple 1 DONE INIT");
+  max31856_init(&config.thermocouple[1], THERMOCOUPLE_CS2);
+   ESP_LOGI(TAG, "Thermocouple 2 DONE INIT");
+   max31856_init(&config.thermocouple[2], THERMOCOUPLE_CS3);
     ESP_LOGI(TAG, "Thermocouple set type...");
-    thermocouple_set_type(&config.thermocouple[0], MAX31856_TCTYPE_K);
+   thermocouple_set_type(&config.thermocouple[0], MAX31856_TCTYPE_K);
     thermocouple_set_type(&config.thermocouple[1], MAX31856_TCTYPE_K);
     thermocouple_set_type(&config.thermocouple[2], MAX31856_TCTYPE_K);
     ESP_LOGI(TAG, "Thermocouple read fault...");
@@ -136,13 +151,15 @@ esp_err_t board_config_init(void) {
     fault_val = thermocouple_read_fault(&config.thermocouple[1], true);
     if (fault_val == 1)
     {
-        return ESP_FAIL;
+       return ESP_FAIL;
     }
-    fault_val = thermocouple_read_fault(&config.thermocouple[2], true);
+   fault_val = thermocouple_read_fault(&config.thermocouple[2], true);
     if (fault_val == 1)
-    {
+   {
         return ESP_FAIL;
     }
+        
+        
 
     // INIT PRESSURE SENSOR
     pressure_driver_status_t ret_press;

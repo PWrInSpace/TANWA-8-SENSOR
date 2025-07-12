@@ -26,11 +26,11 @@
 
 // UART
 #define UART2_RX 16U
-#define UART2_TX 17U
+#define UART2_TX 17U    
 
 // Thermocouples
-#define THERMOCOUPLE_CS1 33U
-#define THERMOCOUPLE_CS2 25U
-#define THERMOCOUPLE_CS3 25U //test pin
+#define THERMOCOUPLE_CS1 16U
+#define THERMOCOUPLE_CS2 15U
+#define THERMOCOUPLE_CS3 7U
 
 #endif // PINOUT_HH

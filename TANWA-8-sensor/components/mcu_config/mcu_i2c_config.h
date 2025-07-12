@@ -23,7 +23,7 @@
 
 #define SDA_GPIO 14
 #define SCL_GPIO 13
-#define CONFIG_I2C_MASTER_PORT_NUM I2C_NUM_1 
+#define CONFIG_I2C_MASTER_PORT_NUM I2C_NUM_0 
 #define CONFIG_I2C_MASTER_FREQUENCY 100000
 #define CONFIG_I2C_MASTER_TIMEOUT_MS 1000
 #define MCU_I2C_DEFAULT_CONFIG()                                                      \

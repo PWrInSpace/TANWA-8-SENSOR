@@ -1,4 +1,4 @@
-idf_component_register(SRCS "led_driver.c" "tmp1075.c"
+idf_component_register(SRCS "max31856.c" "pressure_driver.c" "tmp1075.c" "led_driver.c" "ads1115.c"
                        INCLUDE_DIRS "."
                        REQUIRES driver)
 

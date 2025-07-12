@@ -20,16 +20,17 @@ static mcu_i2c_config_t mcu_i2c_config = {
 
 esp_err_t mcu_i2c_init() {
   if (mcu_i2c_config.i2c_init_flag == false) {
-    i2c_config_t conf = {
-        .mode = I2C_MODE_MASTER,
-        .sda_io_num = mcu_i2c_config.sda,
-        .scl_io_num = mcu_i2c_config.scl,
-        .sda_pullup_en = GPIO_PULLUP_DISABLE,
-        .scl_pullup_en = GPIO_PULLUP_DISABLE,
-        .master.clk_speed = mcu_i2c_config.clk_speed,
-    };
-    i2c_param_config(mcu_i2c_config.port, &conf);
-    esp_err_t ret = i2c_driver_install(mcu_i2c_config.port, conf.mode, 0, 0, 0);
+      i2c_config_t conf;
+      conf.mode = I2C_MODE_MASTER;
+      conf.sda_io_num = SDA_GPIO;
+      conf.scl_io_num = SCL_GPIO;
+      conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
+      conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
+      conf.master.clk_speed = 100000;
+      i2c_param_config(I2C_NUM_0, &conf);
+
+      
+    esp_err_t ret = i2c_driver_install(I2C_NUM_0, I2C_MODE_MASTER, 0, 0, 0);
     if (ret != ESP_OK) {
       ESP_LOGE(TAG, "I2C driver install error: %d", ret);
       return ret;

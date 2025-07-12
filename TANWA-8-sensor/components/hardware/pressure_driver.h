@@ -20,6 +20,7 @@
 #include <stdbool.h>
 
 #include "ads1115.h"
+#include "max31856.h"
 
 #define PRESSURE_DRIVER_SENSOR_COUNT 8
 

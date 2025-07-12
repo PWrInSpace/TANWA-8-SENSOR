@@ -7,6 +7,7 @@
 #include "setup_task.h"
 #include "board_config.h"
 #include "tmp1075.h"
+#include "max31856.h"
 
 #include "measure_task.h"
 
@@ -24,17 +25,11 @@ void setup_task(void *arg) {
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "Board configuration failed");
         vTaskDelete(NULL);
-    }
-
- //    Start the app task
-    if(setup_task_init() != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to initialize app task");
-        vTaskDelete(NULL);
-    }
+    }   
 
     measure_task_init();
-    
     ESP_LOGI(TAG, "SETUP DONE");
+
     vTaskDelete(NULL);
 }
 
