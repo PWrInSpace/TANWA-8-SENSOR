@@ -37,7 +37,6 @@ static mcu_gpio_config_t mcu_gpio_config = {
         
 
         }
-    },
 };
 
 esp_err_t mcu_gpio_init() {

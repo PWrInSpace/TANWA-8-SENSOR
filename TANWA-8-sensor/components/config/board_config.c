@@ -76,7 +76,6 @@ board_config_t config = {
         .i2c_address = 0x49,
     },
     .pressure_driver = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115),
-    },
 };
 
 esp_err_t board_config_init(void) {

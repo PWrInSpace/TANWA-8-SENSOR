@@ -1,10 +1,14 @@
 {
     "C_Cpp.intelliSenseEngine": "default",
     "idf.espIdfPath": "/home/janek/Documents/esp/esp-idf",
-    "idf.pythonInstallPath": "/usr/bin/python3",
+    "idf.pythonInstallPath": "C:\\Users\\mateusz.klosinski\\.espressif\\tools\\idf-python\\3.11.2\\python.exe",
     "idf.openOcdConfigs": [
         "board/esp32s3-builtin.cfg"
     ],
     "idf.port": "/dev/ttyS0",
-    "idf.toolsPath": "/home/janek/.espressif"
+    "idf.toolsPath": "/home/janek/.espressif",
+    "files.associations": {
+        "stdbool.h": "c",
+        "tmp1075.h": "c"
+    }
 }

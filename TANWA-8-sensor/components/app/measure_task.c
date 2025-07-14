@@ -13,7 +13,8 @@
 #include "tmp1075.h"
 #include "pressure_driver.h"
 #include "max31856.h"
-
+#include "BoardData.h"
+#define TAG "MEASURE_TASK"
 float temperature;
 float pressure;
 static TaskHandle_t measure_task_handle = NULL;
@@ -31,35 +32,42 @@ esp_err_t measure_task_init(void) {
 
 void measure_task(void*){
 
-    while(1){
-     //  printf("Temperature sensor\n");
-        //tmp1075_status_t ret = tmp1075_get_temp_celsius(&(config.tmp1075), &temperature);
-       // printf("TEMP_STAT = %f\n", temperature);
+         while(1){
+         if (xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(1000)) == pdTRUE) {
+      
+            printf("Temperature sensor\n");
+        tmp1075_status_t ret = tmp1075_get_temp_celsius(&(config.tmp1075), &BoardData.status_temp);
+        printf("TEMP_STAT = %f\n", BoardData.status_temp);
 
-      //  printf("###################################################################\n");
-      //  printf("Pressure sensor\n");
-      //  pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_1,&pressure);
-      //  printf("PRESS_STAT_1 = %f\n", pressure);
+        printf("###################################################################\n");
+        printf("Pressure sensor\n");
+        pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_1,&BoardData.pressure[0]);
+        printf("PRESS_STAT_1 = %f\n", BoardData.pressure[0]);
 
-      //  pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_2,&pressure);
-      //  printf("PRESS_STAT_2 = %f\n", pressure);
+        pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_2,&BoardData.pressure[1]);
+        printf("PRESS_STAT_2 = %f\n", BoardData.pressure[1]);
 
-      //  pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_3,&pressure);
-      //  printf("PRESS_STAT_3 = %f\n", pressure);
+        pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_3,&BoardData.pressure[2]);
+        printf("PRESS_STAT_3 = %f\n", BoardData.pressure[2]);
 
-      //  pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_4,&pressure);
-      //  printf("PRESS_STAT_4 = %f\n", pressure);
-
-      //  printf("###################################################################\n");
-      //  printf("Thermocouple\n");
-
-        float temp1 = (thermocouple_read_temperature(&config.thermocouple[0]));
-       float temp2 = (thermocouple_read_temperature(&config.thermocouple[1]));
-        float temp3 = (thermocouple_read_temperature(&config.thermocouple[2]));
+        pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_4,&BoardData.pressure[3]);
+        printf("PRESS_STAT_4 = %f\n", BoardData.pressure[3]);
         
-        printf("Termocouple 1 = %f\n", temp1);
-       printf("Termocouple 2 = %f\n", temp2);
-        printf("Termocouple 3 = %f\n", temp3);
+        printf("###################################################################\n");
+        printf("Thermocouple\n");
+
+        BoardData.temperature[0] = (thermocouple_read_temperature(&config.thermocouple[0]));
+        BoardData.temperature[1]= (thermocouple_read_temperature(&config.thermocouple[1]));
+        BoardData.temperature[2] = (thermocouple_read_temperature(&config.thermocouple[2]));
+        
+        printf("Termocouple 1 = %f\n", BoardData.temperature[0]);
+       printf("Termocouple 2 = %f\n", BoardData.temperature[1]);
+        printf("Termocouple 3 = %f\n", BoardData.temperature[2]);
         vTaskDelay(50);
+        xSemaphoreGive(BoardDataSemaphore);
+    } else 
+    {
+        ESP_LOGE(TAG, "Failed to take BoardDataSemaphore");
     }
+}
 }
