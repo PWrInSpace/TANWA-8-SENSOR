@@ -57,4 +57,3 @@ esp_err_t mcu_twai_deinit() {
     
     return ESP_OK;
 }
-

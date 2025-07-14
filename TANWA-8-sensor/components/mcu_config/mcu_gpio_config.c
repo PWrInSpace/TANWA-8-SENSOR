@@ -35,6 +35,8 @@ static mcu_gpio_config_t mcu_gpio_config = {
             .intr_type = GPIO_INTR_DISABLE,
         }
         
+
+        }
     },
 };
 

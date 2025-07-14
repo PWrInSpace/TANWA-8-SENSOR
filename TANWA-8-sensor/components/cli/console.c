@@ -2,7 +2,6 @@
 #include "esp_console.h"
 #include "esp_mac.h"
 
-
 esp_err_t console_init(void) {
     esp_err_t ret;
 

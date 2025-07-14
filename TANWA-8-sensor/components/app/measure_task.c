@@ -63,4 +63,3 @@ void measure_task(void*){
         vTaskDelay(50);
     }
 }
-   

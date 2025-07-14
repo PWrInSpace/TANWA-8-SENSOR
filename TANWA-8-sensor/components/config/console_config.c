@@ -19,6 +19,11 @@
 #define TAG "CONSOLE_CONFIG"
 
 #include "esp_console.h"
+#include "console.h"
+#include "console_config.h"
+
+#define TAG "CONSOLE_CONFIG"
+
 
 // example function to reset the device
 int reset_device(int argc, char **argv) {
@@ -45,12 +50,14 @@ static int read_temperature(int argc, char **argv) {
 }
 
 
+
  // Place for the console configuration
 
  static esp_console_cmd_t cmd [] = {
  // example command:
  // cmd     help description   hint  function      args
  {"reset", "Reset the device", NULL, reset_device, NULL},
+
  {"temp-read", "read temperature", NULL, read_temperature, NULL},
  };
 
@@ -64,6 +71,13 @@ esp_err_t console_config_init() {
     esp_err_t ret;
     ret = esp_console_init(&console_config);
     ret = esp_console_register_help_command();
+
+ };
+
+esp_err_t console_config_init() {
+    esp_err_t ret;
+    ret = console_init();
+    ret = console_register_commands(cmd, sizeof(cmd) / sizeof(cmd[0]));
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "%s", esp_err_to_name(ret));
         return ret;

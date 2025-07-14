@@ -1,6 +1,8 @@
 #include "max31856.h"
+
 #include "driver/spi_master.h"
 #include "driver/gpio.h"
+
 
 const char *TAG = "MAX31856";
 
@@ -194,6 +196,7 @@ float thermocouple_read_temperature(max31856_cfg *max31856) {
     max31856_oneshot_temperature(max31856->spi, max31856->cs_pin);
     uint32_t tc_temp = max31856_read_register24(max31856->spi, max31856->cs_pin, MAX31856_LTCBH_REG);
      ESP_LOGI(TAG, "Thermo raw temp: %d", tc_temp);
+    // ESP_LOGI(TAG, "Thermo raw temp: %d", tc_temp);
     if (tc_temp & 0x800000) {
         tc_temp |= 0xFF000000; // fix sign bit
     }
@@ -230,6 +233,19 @@ bool max31856_init(max31856_cfg *max31856, uint8_t cs_pin) {
     vTaskDelay(100 / portTICK_PERIOD_MS);
 
     esp_err_t ret;
+
+
+    spi_device_interface_config_t devcfg = {
+        .clock_speed_hz = (APB_CLK_FREQ/10), // 8 Mhz
+        .dummy_bits = 0,
+        .mode = 1,
+        .flags = 0,
+        .spics_io_num = -1, // Manually Control CS
+        .queue_size = 1,
+    };
+
+    ret=spi_bus_add_device(HSPI_HOST, &devcfg, &max31856->spi);
+    ESP_ERROR_CHECK(ret);
 
     // Assert on All Faults
     max31856_write_register(max31856->spi, cs_pin, MAX31856_MASK_REG, 0x00);
