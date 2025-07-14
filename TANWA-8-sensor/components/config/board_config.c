@@ -82,13 +82,6 @@ board_config_t config = {
     },
     .pressure_driver = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115),
 
-    
-
-        .gpio_num = CONFIG_GPIO_LED,
-        .drive = LED_DRIVE_POSITIVE,
-        .state = LED_STATE_OFF, 
-    },
-
 };
 
 esp_err_t board_config_init(void) {

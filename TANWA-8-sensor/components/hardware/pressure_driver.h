@@ -21,8 +21,6 @@
 
 #include "ads1115.h"
 
-#define PRESSURE_DRIVER_SENSOR_COUNT 8
-
 #define PRESSURE_DRIVER_SENSOR_COUNT 4
 
 

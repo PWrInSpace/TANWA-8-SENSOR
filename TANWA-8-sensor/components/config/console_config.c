@@ -59,9 +59,8 @@ static int read_temperature(int argc, char **argv) {
  static esp_console_cmd_t cmd [] = {
  // example command:
  // cmd     help description   hint  function      args
- {"reset", "Reset the device", NULL, reset_device, NULL},
-
- {"temp-read", "read temperature", NULL, read_temperature, NULL},
+ {"reset", "Reset the device", NULL, reset_device, NULL,NULL,NULL},
+ {"temp-read", "read temperature", NULL, read_temperature, NULL,NULL,NULL},
  };
 
  esp_console_config_t console_config = {
@@ -72,19 +71,18 @@ static int read_temperature(int argc, char **argv) {
 
 esp_err_t console_config_init() {
     esp_err_t ret;
-    ret = esp_console_init(&console_config);
-    ret = esp_console_register_help_command();
-
- };
-
-esp_err_t console_config_init() {
-    esp_err_t ret;
-    ret = console_init();
-    ret = console_register_commands(cmd, sizeof(cmd) / sizeof(cmd[0]));
-
+    ret = console_init();  // Ensure this succeeds
     if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "%s", esp_err_to_name(ret));
+        ESP_LOGE(TAG, "console_init failed: %s", esp_err_to_name(ret));
         return ret;
     }
-    return ret;
+
+    ret = console_register_commands(cmd, sizeof(cmd) / sizeof(cmd[0]));
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "console_register_commands failed: %s", esp_err_to_name(ret));
+        return ret;
+    }
+
+    ESP_LOGI(TAG, "Console commands registered successfully.");
+    return ESP_OK;
 }

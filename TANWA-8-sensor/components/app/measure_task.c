@@ -36,14 +36,4 @@ void measure_task(void*){
         vTaskDelay(500);
     }
 }
-   
-
-void measure_task(void){
-
-    TickType_t xLastWakeTime = xTaskGetTickCount();
-
-   while(1){
-
-   }
-}
 
