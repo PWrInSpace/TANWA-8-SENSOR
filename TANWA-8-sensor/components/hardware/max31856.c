@@ -2,6 +2,7 @@
 
 #include "driver/spi_master.h"
 #include "driver/gpio.h"
+#include "driver/sdspi_host.h"
 
 
 const char *TAG = "MAX31856";
@@ -244,7 +245,7 @@ bool max31856_init(max31856_cfg *max31856, uint8_t cs_pin) {
         .queue_size = 1,
     };
 
-    ret=spi_bus_add_device(HSPI_HOST, &devcfg, &max31856->spi);
+    ret=spi_bus_add_device(SDSPI_DEFAULT_HOST, &devcfg, &max31856->spi);
     ESP_ERROR_CHECK(ret);
 
     // Assert on All Faults

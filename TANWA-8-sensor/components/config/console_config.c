@@ -56,9 +56,9 @@ static int read_temperature(int argc, char **argv) {
  static esp_console_cmd_t cmd [] = {
  // example command:
  // cmd     help description   hint  function      args
- {"reset", "Reset the device", NULL, reset_device, NULL, NULL, NULL},
+ {"reset", "Reset the device", NULL, reset_device, NULL},
 
- {"temp-read", "read temperature", NULL, read_temperature, NULL, NULL, NULL},
+ {"temp-read", "read temperature", NULL, read_temperature, NULL},
  };
 
  esp_console_config_t console_config = {

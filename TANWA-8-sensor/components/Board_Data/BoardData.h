@@ -13,3 +13,5 @@ typedef struct {
 
 extern BoardData_t BoardData;
 extern SemaphoreHandle_t BoardDataSemaphore;
+
+esp_err_t board_data_init(void);

@@ -20,7 +20,7 @@ float pressure;
 static TaskHandle_t measure_task_handle = NULL;
 esp_err_t measure_task_init(void) {
     
-    if(xTaskCreatePinnedToCore(measure_task, "measure_task", 4096, NULL, 0, &measure_task_handle, 0) == pdPASS) {
+    if(xTaskCreatePinnedToCore(measure_task, "measure_task", 4096, NULL, 7, &measure_task_handle, 0) == pdPASS) {
         ESP_LOGI("MEASURE_TASK", "Measure task created successfully");
     } else {
         ESP_LOGE("MEASURE_TASK", "Failed to create measure task");
@@ -33,7 +33,7 @@ esp_err_t measure_task_init(void) {
 void measure_task(void*){
 
          while(1){
-         if (xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(1000)) == pdTRUE) {
+         if (xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(10)) == pdTRUE) {
     
         tmp1075_status_t ret = tmp1075_get_temp_celsius(&(config.tmp1075), &BoardData.status_temp);
         pressure_driver_read_pressures(&(config.pressure_driver),BoardData.pressure);
@@ -55,7 +55,7 @@ void measure_task(void*){
         printf("Termocouple_1 = %f\n", BoardData.temperature[0]);
         printf("Termocouple_2 = %f\n", BoardData.temperature[1]);
         printf("Termocouple_3 = %f\n", BoardData.temperature[2]);
-        vTaskDelay(50);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
 
         xSemaphoreGive(BoardDataSemaphore);
     } else 

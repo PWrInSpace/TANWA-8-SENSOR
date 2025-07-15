@@ -25,6 +25,7 @@
 #include "mcu_gpio_config.h"
 #include "mcu_twai_config.h"
 #include "can_config.h"
+#include "BoardData.h"
 #include "console_config.h"
 
 #define TAG "BOARD_CONFIG"
@@ -90,18 +91,18 @@ esp_err_t board_config_init(void) {
     }
 
 
-    err = mcu_twai_init();
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "TWAI initialization failed");
-        return err;
-    }
+    // err = mcu_twai_init();
+    // if (err != ESP_OK) {
+    //     ESP_LOGE(TAG, "TWAI initialization failed");
+    //     return err;
+    // }
 
-    err = can_config_init();
+    // err = can_config_init();
 
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "CAN initialization failed");
-        return err;
-    }
+    // if (err != ESP_OK) {
+    //     ESP_LOGE(TAG, "CAN initialization failed");
+    //     return err;
+    // }
 
     err = console_config_init();
 
@@ -129,6 +130,8 @@ esp_err_t board_config_init(void) {
     // INIT THERMOCOUPLES
 
     uint8_t fault_val;
+
+    board_data_init();
     
     ESP_LOGI(TAG, "Thermocouple initialization...");
     max31856_init(&config.thermocouple[0], THERMOCOUPLE_CS1);
