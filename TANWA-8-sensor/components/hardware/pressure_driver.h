@@ -120,4 +120,6 @@ pressure_driver_status_t pressure_driver_read_voltage(pressure_driver_struct_t *
 
 pressure_driver_status_t pressure_driver_read_pressure(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float *pressure);
 
+pressure_driver_status_t pressure_driver_read_pressures(pressure_driver_struct_t *pressure_driver, float *pressure);
+
 #endif /* PWRINSPACE_PRESSURE_DRIVER_H_ */

@@ -9,6 +9,7 @@
     "idf.toolsPath": "/home/janek/.espressif",
     "files.associations": {
         "stdbool.h": "c",
-        "tmp1075.h": "c"
+        "tmp1075.h": "c",
+        "pressure_driver.h": "c"
     }
 }

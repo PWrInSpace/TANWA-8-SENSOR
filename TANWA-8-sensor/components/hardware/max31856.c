@@ -167,7 +167,7 @@ max31856_thermocoupletype_t thermocouple_get_type(max31856_cfg *max31856) {
 
 uint8_t thermocouple_read_fault(max31856_cfg *max31856, bool log_fault) {
     uint8_t fault_val = max31856_read_fast_register(max31856->spi, max31856->cs_pin, MAX31856_SR_REG);
-    if (fault_val && log_fault) {
+    if (!(fault_val && log_fault)) {
         if (fault_val & MAX31856_FAULT_CJRANGE) ESP_LOGI(TAG, "Fault: Cold Junction Range");
         if (fault_val & MAX31856_FAULT_TCRANGE) ESP_LOGI(TAG, "Fault: Thermocouple Range");
         if (fault_val & MAX31856_FAULT_CJHIGH) ESP_LOGI(TAG, "Fault: Cold Junction High");

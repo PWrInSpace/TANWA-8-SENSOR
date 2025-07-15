@@ -34,36 +34,29 @@ void measure_task(void*){
 
          while(1){
          if (xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(1000)) == pdTRUE) {
-      
-            printf("Temperature sensor\n");
+    
         tmp1075_status_t ret = tmp1075_get_temp_celsius(&(config.tmp1075), &BoardData.status_temp);
-        printf("TEMP_STAT = %f\n", BoardData.status_temp);
-
-        printf("###################################################################\n");
-        printf("Pressure sensor\n");
-        pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_1,&BoardData.pressure[0]);
-        printf("PRESS_STAT_1 = %f\n", BoardData.pressure[0]);
-
-        pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_2,&BoardData.pressure[1]);
-        printf("PRESS_STAT_2 = %f\n", BoardData.pressure[1]);
-
-        pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_3,&BoardData.pressure[2]);
-        printf("PRESS_STAT_3 = %f\n", BoardData.pressure[2]);
-
-        pressure_driver_read_pressure(&(config.pressure_driver), PRESSURE_DRIVER_SENSOR_4,&BoardData.pressure[3]);
-        printf("PRESS_STAT_4 = %f\n", BoardData.pressure[3]);
+        pressure_driver_read_pressures(&(config.pressure_driver),BoardData.pressure);
         
-        printf("###################################################################\n");
-        printf("Thermocouple\n");
-
         BoardData.temperature[0] = (thermocouple_read_temperature(&config.thermocouple[0]));
         BoardData.temperature[1]= (thermocouple_read_temperature(&config.thermocouple[1]));
         BoardData.temperature[2] = (thermocouple_read_temperature(&config.thermocouple[2]));
-        
-        printf("Termocouple 1 = %f\n", BoardData.temperature[0]);
-       printf("Termocouple 2 = %f\n", BoardData.temperature[1]);
-        printf("Termocouple 3 = %f\n", BoardData.temperature[2]);
+
+        printf("################################TEMP_STAT###################################\n");
+        printf("TEMP_STAT = %f\n", BoardData.status_temp);
+
+        printf("################################Pressure###################################\n");
+        printf("PRESS_1 = %f\n", BoardData.pressure[0]);
+        printf("PRESS_2 = %f\n", BoardData.pressure[1]);
+        printf("PRESS_3 = %f\n", BoardData.pressure[2]);
+        printf("PRESS_4 = %f\n", BoardData.pressure[3]);
+
+        printf("################################Thermocouple###################################\n");
+        printf("Termocouple_1 = %f\n", BoardData.temperature[0]);
+        printf("Termocouple_2 = %f\n", BoardData.temperature[1]);
+        printf("Termocouple_3 = %f\n", BoardData.temperature[2]);
         vTaskDelay(50);
+
         xSemaphoreGive(BoardDataSemaphore);
     } else 
     {
