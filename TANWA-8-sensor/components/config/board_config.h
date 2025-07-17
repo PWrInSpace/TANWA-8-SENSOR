@@ -25,12 +25,13 @@
 
 
 typedef struct {
+    
     char board_name[32];
     led_struct_t status_led;
     tmp1075_struct_t tmp1075;
     max31856_cfg thermocouple[MAX31856_QUANTITY];
-    ads1115_struct_t ads1115;
-    pressure_driver_struct_t pressure_driver;
+    ads1115_struct_t ads1115[2];
+    pressure_driver_struct_t pressure_driver[2];
 
 } board_config_t;
 

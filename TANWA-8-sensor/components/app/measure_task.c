@@ -36,7 +36,8 @@ void measure_task(void*){
          if (xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(10)) == pdTRUE) {
     
         tmp1075_status_t ret = tmp1075_get_temp_celsius(&(config.tmp1075), &BoardData.status_temp);
-        pressure_driver_read_pressures(&(config.pressure_driver),BoardData.pressure);
+        pressure_driver_read_pressures(&(config.pressure_driver[0]),BoardData.pressure);
+        pressure_driver_read_pressures(&(config.pressure_driver[1]),BoardData.pressure+4);
         
         BoardData.temperature[0] = (thermocouple_read_temperature(&config.thermocouple[0]));
         BoardData.temperature[1]= (thermocouple_read_temperature(&config.thermocouple[1]));

@@ -54,7 +54,8 @@ void _led_delay(uint32_t _ms) {
     vTaskDelay(_ms / portTICK_PERIOD_MS);
 }
 
-board_config_t config = {
+board_config_t config = 
+{
     .board_name = "TANWA_BOARD", //CHANGE TO REAL BOARD NAME
     .status_led = {
         ._gpio_set_level = _mcu_gpio_set_level,
@@ -71,18 +72,23 @@ board_config_t config = {
         .i2c_address = CONFIG_I2C_TMP1075_TS1_ADDR,
         .config_register = 0,
     },
-    .ads1115 = {
+    .ads1115[0] = {
         ._i2c_write = _mcu_i2c_write,
         ._i2c_read = _mcu_i2c_read,
         .i2c_address = 0x49,
     },
-    .pressure_driver = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115),
+    .ads1115[1] = {
+        ._i2c_write = _mcu_i2c_write,
+        ._i2c_read = _mcu_i2c_read,
+        .i2c_address = 0x51,
+    },
+    .pressure_driver[0] = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115[0]),
+    .pressure_driver[1] = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115[1]),
 };
 
 esp_err_t board_config_init(void) {
 
     esp_err_t err;
-    
     err = mcu_gpio_init();
 
     if (err != ESP_OK) {
@@ -164,7 +170,7 @@ esp_err_t board_config_init(void) {
 
     // INIT PRESSURE SENSOR
     pressure_driver_status_t ret_press;
-    ret_press = pressure_driver_init(&(config.pressure_driver));
+    ret_press = pressure_driver_init(&(config.pressure_driver[0]));
     if (ret_press != PRESSURE_DRIVER_OK)
     {
         ESP_LOGE(TAG, "Failed to initialize pressure driver");
@@ -172,7 +178,18 @@ esp_err_t board_config_init(void) {
     }
     else
     {
-        ESP_LOGI(TAG, "Pressure driver initialized");
+        ESP_LOGI(TAG, "Pressure driver 1 initialized");
+    }
+
+    ret_press = pressure_driver_init(&(config.pressure_driver[1]));
+    if (ret_press != PRESSURE_DRIVER_OK)
+    {
+        ESP_LOGE(TAG, "Failed to initialize pressure driver");
+        return ESP_FAIL;
+    }
+    else
+    {
+        ESP_LOGI(TAG, "Pressure driver 2 initialized");
     }
 
     return ESP_OK;

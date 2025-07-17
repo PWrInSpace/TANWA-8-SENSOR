@@ -7,6 +7,7 @@
 typedef struct {
     float temperature[3];
     float status_temp;
+    float humidity;
     float pressure[8];
 
 } BoardData_t;
