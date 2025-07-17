@@ -80,7 +80,7 @@ board_config_t config =
     .ads1115[1] = {
         ._i2c_write = _mcu_i2c_write,
         ._i2c_read = _mcu_i2c_read,
-        .i2c_address = 0x51,
+        .i2c_address = 0x99,
     },
     .pressure_driver[0] = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115[0]),
     .pressure_driver[1] = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115[1]),
@@ -96,19 +96,20 @@ esp_err_t board_config_init(void) {
         return err;
     }
 
+    board_data_init();
+    
+    err = mcu_twai_init();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "TWAI initialization failed");
+        return err;
+    }
 
-    // err = mcu_twai_init();
-    // if (err != ESP_OK) {
-    //     ESP_LOGE(TAG, "TWAI initialization failed");
-    //     return err;
-    // }
+    err = can_config_init();
 
-    // err = can_config_init();
-
-    // if (err != ESP_OK) {
-    //     ESP_LOGE(TAG, "CAN initialization failed");
-    //     return err;
-    // }
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "CAN initialization failed");
+        return err;
+    }
 
     err = console_config_init();
 
@@ -136,8 +137,6 @@ esp_err_t board_config_init(void) {
     // INIT THERMOCOUPLES
 
     uint8_t fault_val;
-
-    board_data_init();
     
     ESP_LOGI(TAG, "Thermocouple initialization...");
     max31856_init(&config.thermocouple[0], THERMOCOUPLE_CS1);

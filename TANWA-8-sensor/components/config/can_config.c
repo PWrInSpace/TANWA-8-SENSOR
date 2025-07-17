@@ -20,27 +20,23 @@ esp_err_t parse_float_to_int16_t(float * input, size_t size, int16_t *output)
 // Handler function definitions
 esp_err_t send_board_status_handler(uint8_t *data, uint8_t length) 
 {
-    xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(10));
+   // xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(10));
     uint8_t data_send[3] = {0};
     data_send[0] = BoardData.status_temp;
     data_send[1] = BoardData.humidity; //TODO: ADD HUMIDITY DRIVER
     data_send[2] = 100; //TODO: ADD CURR SENSING ON ALL BOARDS
-    xSemaphoreGive(BoardDataSemaphore);
-    can_send_message(CAN_SEND_BOARD_STATUS, data_send, sizeof(data));
+   //s xSemaphoreGive(BoardDataSemaphore);
+    can_send_message(CAN_SEND_BOARD_STATUS, data_send, 8);
     return ESP_OK;
 }
 
-esp_err_t send_board_data_handler(uint8_t *data, uint8_t length) {
-
-    return ESP_OK;
-}
 
 esp_err_t send_press_data_handler(uint8_t *data, uint8_t length) {
 
     int16_t pressure[8] = {0};
     uint8_t pressure_1_frame[8] = {0};
     uint8_t pressure_2_frame[8] = {0};
-    xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(10));
+    //xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(10));
     parse_float_to_int16_t(BoardData.pressure, 8, pressure);
 
     memcpy(pressure_1_frame, &pressure[0], sizeof(pressure_1_frame));
@@ -49,24 +45,37 @@ esp_err_t send_press_data_handler(uint8_t *data, uint8_t length) {
 
     can_send_message(CAN_SEND_PRESS_DATA_1, pressure_1_frame, sizeof(pressure_1_frame));
     can_send_message(CAN_SEND_PRESS_DATA_2, pressure_2_frame, sizeof(pressure_2_frame));
-    xSemaphoreGive(BoardDataSemaphore);
+    //xSemaphoreGive(BoardDataSemaphore);
     return ESP_OK;
 }
 
 esp_err_t send_temp_data_handler(uint8_t *data, uint8_t length) {
 
+    ESP_LOGI(TAG, "############CAN READ TEMP#############");
     int16_t temperature[3] = {0};
     uint8_t pt100_temp[2] = {35, 35};
     uint8_t frame[8] = {0};
-    xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(10));
+    if(!xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(100)))
+    {
+        ESP_LOGE(TAG,"Failed to tak esemaphore\n");
+        return ESP_FAIL;
+    }
     parse_float_to_int16_t(BoardData.temperature, 3, temperature);
-
-    memcpy(frame, &temperature[0], sizeof(temperature));
-    memcpy(frame+3, &pt100_temp, sizeof(pt100_temp));
-
-
-    can_send_message(CAN_SEND_BOARD_STATUS, frame, sizeof(frame));
+    //printf("TEMPERATURE [0] = %d", data[0]);
+    //printf("TEMPERATURE [1] = %d", data[1]);
+    
+    memcpy(frame, temperature, sizeof(temperature));
+    memcpy(frame+6, pt100_temp, sizeof(pt100_temp));
+    printf("TEMP 0 = %d     %d\n", frame[0], frame[1]);
+    printf("TEMP 1 = %d     %d\n", frame[2], frame[3]);
+    can_send_message(CAN_SEND_TEMP_DATA, frame, sizeof(frame));
     xSemaphoreGive(BoardDataSemaphore);
+    return ESP_OK;
+}
+
+esp_err_t send_board_data_handler(uint8_t *data, uint8_t length) {
+   // send_press_data_handler(data,length);
+   // send_temp_data_handler(data,length);
     return ESP_OK;
 }
 
@@ -88,7 +97,8 @@ can_command_t can_commands[] = {
     {CAN_GET_BOARD_DATA, send_board_data_handler},
     {CAN_GET_PRESS_DATA, send_press_data_handler},
     {CAN_SET_PRESS_DATA_RATE, send_press_data_rate_handler},
-    {CAN_GET_PRESS_INFO, send_press_info_handler}
+    {CAN_GET_PRESS_INFO, send_press_info_handler},
+    {CAN_GET_TEMP_DATA, send_temp_data_handler}
 };
 
 

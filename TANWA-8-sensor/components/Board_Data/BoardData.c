@@ -10,6 +10,7 @@ esp_err_t board_data_init(void) {
     if (BoardDataSemaphore == NULL) {
         return ESP_ERR_NO_MEM;
     }
+    xSemaphoreGive(BoardDataSemaphore);
     // Initialize board data (valves are initialized in valves_init())
     return ESP_OK;
 }

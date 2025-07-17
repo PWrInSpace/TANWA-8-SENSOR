@@ -28,8 +28,8 @@ mcu_twai_config_t mcu_twai_config = {
     .t_config = TWAI_TIMING_CONFIG_500KBITS(),
     .f_config = {
         // set the proper filter configuration
-        .acceptance_code = CONFIG_TWAI_ACCEPTANCE_CODE,
-        .acceptance_mask = CONFIG_TWAI_ACCEPTANCE_MASK,
+        .acceptance_code = (0x0D00<<3),
+        .acceptance_mask = ~(0x0F00<<3),
         .single_filter = true,
     },
 };

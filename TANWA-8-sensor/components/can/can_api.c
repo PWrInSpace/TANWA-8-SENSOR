@@ -62,6 +62,7 @@ esp_err_t can_send_message(uint32_t id, uint8_t *data, uint8_t length) {
     // Prepare the message
     message.identifier = id;
     message.data_length_code = length;
+    message.extd = 1;
     memcpy(message.data, data, length);
 
     // Send the message
