@@ -30,8 +30,11 @@
 #define PRESSURE_DRIVER_DEFAULT_MIN_PRESSURE 0.0f
 #define PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE 350.0f
 
-#define PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE 0.33f
-#define PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE 3.0f
+//#define PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE 0.3597f
+//#define PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE 3.237f
+
+#define PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE 0.495f
+#define PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE 4.4554f
 
 #define PRESSURE_DRIVER_TANWA_CONFIG(X)                         \
   {                                                             \
@@ -118,7 +121,7 @@ pressure_driver_status_t pressure_driver_set_max_voltage(pressure_driver_struct_
 
 pressure_driver_status_t pressure_driver_read_voltage(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float *voltage);
 
-pressure_driver_status_t pressure_driver_read_pressure(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float *pressure);
+float pressure_driver_read_pressure(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor);
 
 pressure_driver_status_t pressure_driver_read_pressures(pressure_driver_struct_t *pressure_driver, float *pressure);
 

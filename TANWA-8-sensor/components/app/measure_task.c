@@ -37,10 +37,15 @@ void measure_task(void*){
     
         tmp1075_status_t ret = tmp1075_get_temp_celsius(&(config.tmp1075), &BoardData.status_temp);
         //pressure_driver_read_pressures(&(config.pressure_driver[0]),BoardData.pressure);
-        pressure_driver_read_pressure(&(config.pressure_driver[0]), 1,&BoardData.pressure[0]);
-        pressure_driver_read_pressure(&(config.pressure_driver[0]), 3,&BoardData.pressure[4]);
-       // pressure_driver_read_pressure(&(config.pressure_driver[0]), 1,&(BoardData.pressure[1]));
-        // pressure_driver_read_pressures(&(config.pressure_driver[1]),BoardData.pressure+4);
+        float pressure = 0;
+        float pressure2 = 0;
+        float pressure3 = 0;
+        float pressure4 = 0;
+        //pressure_driver_read_pressure(&(config.pressure_driver[0]), 0,&pressure);
+        //pressure_driver_read_pressure(&(config.pressure_driver[0]), 1,&pressure2);
+        //pressure_driver_read_pressure(&(config.pressure_driver[0]), 2,&pressure3);
+        //pressure_driver_read_pressure(&(config.pressure_driver[0]), 3,&pressure4);
+        pressure_driver_read_pressures(&(config.pressure_driver[0]),BoardData.pressure);
         BoardData.temperature[0] = (thermocouple_read_temperature(&config.thermocouple[0]));
         BoardData.temperature[1]= (thermocouple_read_temperature(&config.thermocouple[1]));
         BoardData.temperature[2] = (thermocouple_read_temperature(&config.thermocouple[2]));
@@ -50,9 +55,9 @@ void measure_task(void*){
 
         printf("################################Pressure###################################\n");
         printf("PRESS_1 = %f\n", BoardData.pressure[0]);
-        //printf("PRESS_2 = %f\n", BoardData.pressure[1]);
-        //printf("PRESS_3 = %f\n", BoardData.pressure[2]);
-        //printf("PRESS_4 = %f\n", BoardData.pressure[3]);
+        printf("PRESS_2 = %f\n", BoardData.pressure[1]);
+        printf("PRESS_3 = %f\n", BoardData.pressure[2]);
+        printf("PRESS_4 = %f\n", BoardData.pressure[3]);
 
         //printf("PRESS_5 = %f\n", BoardData.pressure[4]);
         //printf("PRESS_6 = %f\n", BoardData.pressure[5]);
@@ -64,7 +69,7 @@ void measure_task(void*){
         //printf("Termocouple_2 = %f\n", BoardData.temperature[1]);
         //printf("Termocouple_3 = %f\n", BoardData.temperature[2]);
         xSemaphoreGive(BoardDataSemaphore);
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(10));
 
         
     } else 

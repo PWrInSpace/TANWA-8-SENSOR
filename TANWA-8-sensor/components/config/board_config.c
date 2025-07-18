@@ -96,8 +96,8 @@ esp_err_t board_config_init(void) {
         return err;
     }
 
-    board_data_init();
-    
+    board_data_init(); //!MUST BE BEFORE CAN TASK BECAUSE CAN TASK IS USING IT
+
     err = mcu_twai_init();
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "TWAI initialization failed");
@@ -180,17 +180,17 @@ esp_err_t board_config_init(void) {
         ESP_LOGI(TAG, "Pressure driver 1 initialized");
     }
 
-    ret_press = pressure_driver_init(&(config.pressure_driver[1]));
-    if (ret_press != PRESSURE_DRIVER_OK)
-    {
-        ESP_LOGE(TAG, "Failed to initialize pressure driver");
-        return ESP_FAIL;
-    }
-    else
-    {
-        ESP_LOGI(TAG, "Pressure driver 2 initialized");
-    }
-
+    //ret_press = pressure_driver_init(&(config.pressure_driver[1]));
+    //if (ret_press != PRESSURE_DRIVER_OK)
+    //{
+    //    ESP_LOGE(TAG, "Failed to initialize pressure driver");
+    //    return ESP_FAIL;
+    //}
+    //else
+    //{
+    //    ESP_LOGI(TAG, "Pressure driver 2 initialized");
+    //}
+    //
     return ESP_OK;
 
     //*********** ADD HARDWARE CONFIGURATION HERE ***********//

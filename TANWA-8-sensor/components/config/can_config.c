@@ -19,7 +19,7 @@ esp_err_t parse_float_to_int16_t(float * input, size_t size, int16_t *output)
 }
 // Handler function definitions
 esp_err_t send_board_status_handler(uint8_t *data, uint8_t length) 
-{
+    {
    // xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(10));
     uint8_t data_send[3] = {0};
     data_send[0] = BoardData.status_temp;
@@ -66,8 +66,8 @@ esp_err_t send_temp_data_handler(uint8_t *data, uint8_t length) {
     
     memcpy(frame, temperature, sizeof(temperature));
     memcpy(frame+6, pt100_temp, sizeof(pt100_temp));
-    printf("TEMP 0 = %d     %d\n", frame[0], frame[1]);
-    printf("TEMP 1 = %d     %d\n", frame[2], frame[3]);
+   // printf("TEMP 0 = %d     %d\n", frame[0], frame[1]);
+   // printf("TEMP 1 = %d     %d\n", frame[2], frame[3]);
     can_send_message(CAN_SEND_TEMP_DATA, frame, sizeof(frame));
     xSemaphoreGive(BoardDataSemaphore);
     return ESP_OK;
