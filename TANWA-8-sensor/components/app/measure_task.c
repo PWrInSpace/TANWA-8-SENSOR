@@ -52,14 +52,14 @@ void measure_task(void*){
         BoardData.temperature[1]= (thermocouple_read_temperature(&config.thermocouple[1]));
         BoardData.temperature[2] = (thermocouple_read_temperature(&config.thermocouple[2]));
 
-        //printf("################################TEMP_STAT###################################\n");
+        printf("################################TEMP_STAT###################################\n");
         //printf("TEMP_STAT = %f\n", BoardData.status_temp);
 
-       //printf("################################Pressure###################################\n");
-       //printf("PRESS_1 = %f\n", BoardData.pressure[0]);
-       // printf("PRESS_2 = %f\n", BoardData.pressure[1]);
-       // printf("PRESS_3 = %f\n", BoardData.pressure[2]);
-       // printf("PRESS_4 = %f\n", BoardData.pressure[3]);
+       printf("################################Pressure###################################\n");
+       printf("PRESS_1 = %f\n", BoardData.pressure[0]);
+       printf("PRESS_2 = %f\n", BoardData.pressure[1]);
+       printf("PRESS_3 = %f\n", BoardData.pressure[2]);
+       printf("PRESS_4 = %f\n", BoardData.pressure[3]);
 
         //printf("PRESS_5 = %f\n", BoardData.pressure[4]);
         //printf("PRESS_6 = %f\n", BoardData.pressure[5]);
