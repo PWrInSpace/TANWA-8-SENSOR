@@ -49,6 +49,7 @@
 #include "ads1115.h"
 #include "pressure_driver.h"
 #include "max31856.h"
+#include "hdc1080.h"
 
 void _led_delay(uint32_t _ms) {
     vTaskDelay(_ms / portTICK_PERIOD_MS);
@@ -84,6 +85,13 @@ board_config_t config =
     },
     .pressure_driver[0] = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115[0]),
     .pressure_driver[1] = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115[1]),
+    .hdc = {
+        .i2c_address = HDC1080_I2C_ADDRESS,
+        ._i2c_write = _mcu_i2c_write,
+        ._i2c_read = _mcu_i2c_read,
+        .temperature = 50,
+        .humidity_percentage = 99,
+    },
 };
 
 esp_err_t board_config_init(void) {
@@ -191,9 +199,10 @@ esp_err_t board_config_init(void) {
     //    ESP_LOGI(TAG, "Pressure driver 2 initialized");
     //}
     //
+    hd1080_init(&config.hdc);
     return ESP_OK;
 
     //*********** ADD HARDWARE CONFIGURATION HERE ***********//
-
+    
     
 }

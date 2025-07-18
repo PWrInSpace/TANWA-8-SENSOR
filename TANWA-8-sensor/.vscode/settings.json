@@ -11,7 +11,8 @@
   "files.associations": {
     "stdbool.h": "c",
     "tmp1075.h": "c",
-    "pressure_driver.h": "c"
+    "pressure_driver.h": "c",
+    "esp_console.h": "c"
   },
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32s3"
@@ -21,5 +22,6 @@
     "--background-index",
     "--query-driver=C:\\Users\\mateusz.klosinski\\.espressif\\tools\\xtensa-esp-elf\\esp-13.2.0_20240530\\xtensa-esp-elf\\bin\\xtensa-esp32s3-elf-gcc.exe",
     "--compile-commands-dir=c:\\Users\\mateusz.klosinski\\Desktop\\TANWA\\TANWA-8-SENSOR\\TANWA-8-sensor\\build"
-  ]
+  ],
+  "idf.flashType": "UART"
 }

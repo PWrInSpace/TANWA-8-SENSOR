@@ -21,6 +21,7 @@
 #include "esp_console.h"
 #include "console.h"
 #include "console_config.h"
+#include "BoardData.h"
 
 #define TAG "CONSOLE_CONFIG"
 
@@ -36,15 +37,9 @@ static int read_temperature(int argc, char **argv) {
 
     uint8_t ret = 0;
     float temp;
-
-   // ret = tmp1075_get_temp_celsius(&(config.tmp1075), &temp);
-    //if (ret != TMP1075_OK) {
-    //    ESP_LOGE(TAG, "TMP1075 #1 read temp failed - status: %d", ret);
-     //   return -1;
-   // }
-    
+    temp = BoardData.status_temp;
     CONSOLE_WRITE("TMP1075 Temperature:");
-   //CONSOLE_WRITE("#1 => temp1 = %f", temp);
+    CONSOLE_WRITE("#1 => temp1 = %f", temp);
 
     return 0;
 }
