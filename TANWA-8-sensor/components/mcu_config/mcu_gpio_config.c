@@ -11,7 +11,7 @@
 #define TAG "MCU_GPIO"
 
 static mcu_gpio_config_t mcu_gpio_config = {
-    .pins = {LED_GPIO},
+    .pins = {LED_GPIO,CAN_STB},
     .num_pins = MAX_GPIO_INDEX,
     .configs = {
         {
