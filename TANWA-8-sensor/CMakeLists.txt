@@ -5,4 +5,8 @@
 cmake_minimum_required(VERSION 3.5)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+
+project(TANWA-8-sensor)
+set(EXTRA_COMPONENT_DIRS components/hardware components/app components/config components/mcu_config components/cli components/can components/Board_Data)
+
 project(TANWA-8-sensor)

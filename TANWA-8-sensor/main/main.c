@@ -1,4 +1,19 @@
+
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
+#include "esp_log.h"
+#include "esp_err.h"
+#include "driver/gpio.h"
+#include "board_config.h"
+#include "setup_task.h"
+#include "measure_task.h"
 #include <stdio.h>
+#define TAG "APP"
+
+extern board_config_t config;
+
+
 
 void app_main(void)
 {
@@ -16,3 +31,4 @@ void app_main(void)
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
+

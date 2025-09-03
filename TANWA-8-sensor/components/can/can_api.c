@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+
 #include "driver/twai.h"
 
 #include "esp_log.h"
@@ -10,6 +11,10 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
+
+
+#include "driver/twai.h"
+
 
 #define CAN_TASK_STACK_SIZE CONFIG_CAN_TASK_STACK_SIZE
 #define CAN_TASK_PRIORITY CONFIG_CAN_TASK_PRIORITY

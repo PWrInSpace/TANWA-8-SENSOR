@@ -1,6 +1,10 @@
 #ifndef PWRINSPACE_CONSOLE_H_
 #define PWRINSPACE_CONSOLE_H_
 
+
+#include "esp_mac.h"
+#include "esp_err.h"
+
 #include "esp_console.h"
 
 // For some serial monitors this lib is crashing
