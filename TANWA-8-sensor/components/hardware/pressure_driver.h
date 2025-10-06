@@ -35,7 +35,7 @@
 //#define PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE 3.237f
 
 //3.3k
-#define PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE 0.3650f
+#define PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE 0.3759f
 #define PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE 3.3835f
 
 //#define PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE 0.495f
@@ -58,7 +58,7 @@
         .adc_pin = PRESSURE_DRIVER_SENSOR_2_ADC_PIN,            \
         .pressure_min = PRESSURE_DRIVER_DEFAULT_MIN_PRESSURE,   \
         .pressure_max = PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE,   \
-        .voltage_min = PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE,     \
+        .voltage_min = PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE,                                 \
         .voltage_max = PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE,     \
       },                                                        \
       {                                                         \

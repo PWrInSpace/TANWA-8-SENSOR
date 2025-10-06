@@ -74,10 +74,10 @@ esp_err_t send_temp_data_handler(uint8_t *data, uint8_t length) {
 }
 
 esp_err_t send_board_data_handler(uint8_t *data, uint8_t length) {
-   // send_press_data_handler(data,length);
+    send_press_data_handler(data,length);
    // send_temp_data_handler(data,length);
     return ESP_OK;
-}
+    }
 
 esp_err_t send_press_info_handler(uint8_t *data, uint8_t length) {
 
