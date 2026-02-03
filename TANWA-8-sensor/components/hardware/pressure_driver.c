@@ -31,43 +31,32 @@ pressure_driver_status_t pressure_driver_init(pressure_driver_struct_t *pressure
     return PRESSURE_DRIVER_OK;
 }
 
-
-pressure_driver_status_t pressure_driver_set_min_pressure(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float pressure) {
+pressure_driver_status_t pressure_driver_set_zero_voltage(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float voltage) {
     if (pressure_driver == NULL) {
         return PRESSURE_DRIVER_FAIL;
     }
 
-    pressure_driver->sensors[sensor].pressure_min = pressure;
+    pressure_driver->sensors[sensor].calibr_cfg.voltage_zero = voltage;
 
     return PRESSURE_DRIVER_OK;
 }
 
-pressure_driver_status_t pressure_driver_set_max_pressure(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float pressure) {
+pressure_driver_status_t pressure_driver_set_1_voltage(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float voltage) {
     if (pressure_driver == NULL) {
         return PRESSURE_DRIVER_FAIL;
     }
 
-    pressure_driver->sensors[sensor].pressure_max = pressure;
+    pressure_driver->sensors[sensor].calibr_cfg.voltage_1 = voltage;
 
     return PRESSURE_DRIVER_OK;
 }
 
-pressure_driver_status_t pressure_driver_set_min_voltage(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float voltage) {
+pressure_driver_status_t pressure_driver_set_1_pressure(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float pressure) {
     if (pressure_driver == NULL) {
         return PRESSURE_DRIVER_FAIL;
     }
 
-    pressure_driver->sensors[sensor].voltage_min = voltage;
-
-    return PRESSURE_DRIVER_OK;
-}
-
-pressure_driver_status_t pressure_driver_set_max_voltage(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float voltage) {
-    if (pressure_driver == NULL) {
-        return PRESSURE_DRIVER_FAIL;
-    }
-
-    pressure_driver->sensors[sensor].voltage_max = voltage;
+    pressure_driver->sensors[sensor].calibr_cfg.pressure_1 = pressure;
 
     return PRESSURE_DRIVER_OK;
 }
@@ -85,7 +74,7 @@ pressure_driver_status_t pressure_driver_read_voltage(pressure_driver_struct_t *
     ads1115_get_value(pressure_driver->ads1115, &raw);
     *voltage = ads1115_gain_values[ADS1115_GAIN_4V096] / ADS1115_MAX_VALUE * raw;
     return PRESSURE_DRIVER_OK;
-    }
+}
 
 float pressure_driver_read_pressure(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor) {
     if (pressure_driver == NULL) {
