@@ -27,6 +27,7 @@
 #include "can_config.h"
 #include "BoardData.h"
 #include "console_config.h"
+#include "flash.h"
 
 #define TAG "BOARD_CONFIG"
 
@@ -113,23 +114,24 @@ esp_err_t board_config_init(void) {
     }
 
     err = can_config_init();
-
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "CAN initialization failed");
         return err;
     }
 
-    //nvs_init
+    err = flash_init();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Flash/NVS initialization failed");
+        return err;
+    }
 
     err = console_config_init();
-
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "Console initialization failed");
         return err;
     }
 
     err = mcu_i2c_init();
-
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "I2C failed");
         return err;
@@ -138,7 +140,6 @@ esp_err_t board_config_init(void) {
     ESP_LOGI(TAG, "I2C init successful");
     
     err = mcu_spi_init();
-
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "SPI failed");
         return err;
@@ -147,33 +148,79 @@ esp_err_t board_config_init(void) {
     //*********** ADD HARDWARE CONFIGURATION HERE ***********//
     // INIT THERMOCOUPLES
 
-    config.pressure_driver[0].sensors[0].calibr_cfg.pressure_1 = 350.0; //N2 ZF
-    config.pressure_driver[1].sensors[0].calibr_cfg.voltage_zero = 0.366;
+    data_config_t config;
+    err = flash_read(&data);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to load calibration config from flash/nvs memory");
+        return err;
+    }
+    
+    /*
+    // tbh to by należało lepiej zrobić tak jak tu, żeby nie przypisywać ręcznie każdej wartości (powinno działać pod warunkiem, że pierwsze 24 wartości w config to będą floaty dla tych barometrów, ale nie ma zabezpieczeń)
+    const float *p = (const float *)data;
 
-    config.pressure_driver[0].sensors[1].calibr_cfg.pressure_1 = 25.0; //Droid N2'
-    config.pressure_driver[0].sensors[1].calibr_cfg.voltage_zero = 0.368; //Droid N2 20barow 2.55V 0 barów
-    config.pressure_driver[0].sensors[1].calibr_cfg.voltage_1 = 2.8; //Droid N2 20barow 2.55V 0 barów 
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 4*3; j += 3) {
+            config.pressure_driver[i].sensors[j%3].calibr_cfg.pressure_1 = p[(i * 12) + j];
+            config.pressure_driver[i].sensors[j%3].calibr_cfg.voltage_1 = p[(i * 12) + (j + 1)];
+            config.pressure_driver[i].sensors[j%3].calibr_cfg.voltage_zero = p[(i * 12) + (j + 2)];
+        }
+    }
+    */
 
-    config.pressure_driver[0].sensors[2].calibr_cfg.pressure_1 = 25.0; //DROID N2O
-    config.pressure_driver[0].sensors[2].calibr_cfg.voltage_zero = 0.317; //Droid N2 
-    config.pressure_driver[0].sensors[2].calibr_cfg.voltage_1 = 2.706; //Droid N2 1.33V 10barow -- 2.3V 20 barow
+    config.pressure_driver[0].sensors[0].calibr_cfg.pressure_1 = config.pressure_driver_0_sensor_0_pressure_1;
+    config.pressure_driver[0].sensors[0].calibr_cfg.voltage_1 = config.pressure_driver_0_sensor_0_voltage_1;
+    config.pressure_driver[0].sensors[0].calibr_cfg.voltage_zero = config.pressure_driver_0_sensor_0_voltage_zero;
+    //config.pressure_driver[0].sensors[0].calibr_cfg.pressure_1 = 350.0; //N2 ZF
+    //config.pressure_driver[1].sensors[0].calibr_cfg.voltage_zero = 0.366;
+    //                       ^ - tu zle bylo czaly czas
 
-    config.pressure_driver[0].sensors[3].calibr_cfg.pressure_1 = 350.0; //---------
+    config.pressure_driver[0].sensors[1].calibr_cfg.pressure_1 = config.pressure_driver_0_sensor_1_pressure_1;
+    config.pressure_driver[0].sensors[1].calibr_cfg.voltage_1 = config.pressure_driver_0_sensor_1_voltage_1;
+    config.pressure_driver[0].sensors[1].calibr_cfg.voltage_zero = config.pressure_driver_0_sensor_1_voltage_zero;
+    //config.pressure_driver[0].sensors[1].calibr_cfg.pressure_1 = 25.0; //Droid N2'
+    //config.pressure_driver[0].sensors[1].calibr_cfg.voltage_1 = 2.8; //Droid N2 20barow 2.55V 0 barów 
+    //config.pressure_driver[0].sensors[1].calibr_cfg.voltage_zero = 0.368; //Droid N2 20barow 2.55V 0 barów
 
-    config.pressure_driver[1].sensors[0].calibr_cfg.pressure_1 = 350.0; // CUT-OFF 20 barow 0.545V 
-    config.pressure_driver[1].sensors[0].calibr_cfg.voltage_zero = 0.366; //Droid N2 20barow 2.55V 0 barów
+    config.pressure_driver[0].sensors[2].calibr_cfg.pressure_1 = config.pressure_driver_0_sensor_2_pressure_1;
+    config.pressure_driver[0].sensors[2].calibr_cfg.voltage_1 = config.pressure_driver_0_sensor_2_voltage_1;
+    config.pressure_driver[0].sensors[2].calibr_cfg.voltage_zero = config.pressure_driver_0_sensor_2_voltage_zero;
+    //config.pressure_driver[0].sensors[2].calibr_cfg.pressure_1 = 25.0; //DROID N2O
+    //config.pressure_driver[0].sensors[2].calibr_cfg.voltage_zero = 0.317; //Droid N2 
+    //config.pressure_driver[0].sensors[2].calibr_cfg.voltage_1 = 2.706; //Droid N2 1.33V 10barow -- 2.3V 20 barow
 
-    config.pressure_driver[1].sensors[1].calibr_cfg.pressure_1 = 350.0; //N2 ZR
-    config.pressure_driver[1].sensors[1].calibr_cfg.voltage_zero = 0.368; //
-    config.pressure_driver[1].sensors[1].calibr_cfg.voltage_1 = 3.085; // 40 barow = 0.688
+    config.pressure_driver[0].sensors[3].calibr_cfg.pressure_1 = config.pressure_driver_0_sensor_3_pressure_1;
+    config.pressure_driver[0].sensors[3].calibr_cfg.voltage_1 = config.pressure_driver_0_sensor_3_voltage_1;
+    config.pressure_driver[0].sensors[3].calibr_cfg.voltage_zero = config.pressure_driver_0_sensor_3_voltage_zero;
+    //config.pressure_driver[0].sensors[3].calibr_cfg.pressure_1 = 350.0; //---------
 
-    config.pressure_driver[1].sensors[2].calibr_cfg.pressure_1 = 350.0; // N2 PR
-    config.pressure_driver[1].sensors[2].calibr_cfg.voltage_zero = 0.368; //
-    config.pressure_driver[1].sensors[2].calibr_cfg.voltage_1 = 3.085; // 40 barow = 0.688
+    config.pressure_driver[1].sensors[0].calibr_cfg.pressure_1 = config.pressure_driver_1_sensor_0_pressure_1;
+    config.pressure_driver[1].sensors[0].calibr_cfg.voltage_1 = config.pressure_driver_1_sensor_0_voltage_1;
+    config.pressure_driver[1].sensors[0].calibr_cfg.voltage_zero = config.pressure_driver_1_sensor_0_voltage_zero;
+    //config.pressure_driver[1].sensors[0].calibr_cfg.pressure_1 = 350.0; // CUT-OFF 20 barow 0.545V 
+    //config.pressure_driver[1].sensors[0].calibr_cfg.voltage_zero = 0.366; //Droid N2 20barow 2.55V 0 barów
+
+    config.pressure_driver[1].sensors[1].calibr_cfg.pressure_1 = config.pressure_driver_1_sensor_1_pressure_1;
+    config.pressure_driver[1].sensors[1].calibr_cfg.voltage_1 = config.pressure_driver_1_sensor_1_voltage_1;
+    config.pressure_driver[1].sensors[1].calibr_cfg.voltage_zero = config.pressure_driver_1_sensor_1_voltage_zero;
+    //config.pressure_driver[1].sensors[1].calibr_cfg.pressure_1 = 350.0; //N2 ZR
+    //config.pressure_driver[1].sensors[1].calibr_cfg.voltage_zero = 0.368; //
+    //config.pressure_driver[1].sensors[1].calibr_cfg.voltage_1 = 3.085; // 40 barow = 0.688
+
+    config.pressure_driver[1].sensors[2].calibr_cfg.pressure_1 = config.pressure_driver_1_sensor_2_pressure_1;
+    config.pressure_driver[1].sensors[2].calibr_cfg.voltage_1 = config.pressure_driver_1_sensor_2_voltage_1;
+    config.pressure_driver[1].sensors[2].calibr_cfg.voltage_zero = config.pressure_driver_1_sensor_2_voltage_zero; 
+    //config.pressure_driver[1].sensors[2].calibr_cfg.pressure_1 = 350.0; // N2 PR
+    //config.pressure_driver[1].sensors[2].calibr_cfg.voltage_zero = 0.368; //
+    //config.pressure_driver[1].sensors[2].calibr_cfg.voltage_1 = 3.085; // 40 barow = 0.688
         
-    config.pressure_driver[1].sensors[3].calibr_cfg.pressure_1 = 100.0; // N20 ZF
-    config.pressure_driver[1].sensors[3].calibr_cfg.voltage_zero = 0.361; //Droid N2 20barow 2.55V 0 barów
-    config.pressure_driver[1].sensors[3].calibr_cfg.voltage_1 = 3.245; //Droid N2 20barow 2.55V 0 barów
+    config.pressure_driver[1].sensors[3].calibr_cfg.pressure_1 = config.pressure_driver_1_sensor_3_pressure_1;
+    config.pressure_driver[1].sensors[3].calibr_cfg.voltage_1 = config.pressure_driver_1_sensor_3_voltage_1;
+    config.pressure_driver[1].sensors[3].calibr_cfg.voltage_zero = config.pressure_driver_1_sensor_3_voltage_zero;
+    //config.pressure_driver[1].sensors[3].calibr_cfg.pressure_1 = 100.0; // N20 ZF
+    //config.pressure_driver[1].sensors[3].calibr_cfg.voltage_zero = 0.361; //Droid N2 20barow 2.55V 0 barów
+    //config.pressure_driver[1].sensors[3].calibr_cfg.voltage_1 = 3.245; //Droid N2 20barow 2.55V 0 barów
+    ESP_LOGI(TAG, "Successfully loaded calibration config and values");
 
     uint8_t fault_val;
     
