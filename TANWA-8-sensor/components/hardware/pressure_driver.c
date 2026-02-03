@@ -84,7 +84,7 @@ float pressure_driver_read_pressure(pressure_driver_struct_t *pressure_driver, p
     float voltage;
     float pressure;
     pressure_driver_read_voltage(pressure_driver, sensor, &voltage);
-    pressure = (voltage - pressure_driver->sensors[sensor].voltage_min) * (pressure_driver->sensors[sensor].pressure_max - pressure_driver->sensors[sensor].pressure_min) / (pressure_driver->sensors[sensor].voltage_max - pressure_driver->sensors[sensor].voltage_min) + pressure_driver->sensors[sensor].pressure_min;
+    pressure = (voltage - pressure_driver->sensors[sensor].calibr_cfg.voltage_zero) * (pressure_driver->sensors[sensor].calibr_cfg.pressure_1) / (pressure_driver->sensors[sensor].calibr_cfg.voltage_1 - pressure_driver->sensors[sensor].calibr_cfg.voltage_zero);
 
     return pressure;
 }
@@ -105,10 +105,9 @@ pressure_driver_status_t pressure_driver_read_pressures(pressure_driver_struct_t
         }
 
         // Calculate pressure for the current sensor
-        pressure[i] = (voltage[i] - pressure_driver->sensors[i].voltage_min) * 
-                      (pressure_driver->sensors[i].pressure_max - pressure_driver->sensors[i].pressure_min) / 
-                      (pressure_driver->sensors[i].voltage_max - pressure_driver->sensors[i].voltage_min) + 
-                      pressure_driver->sensors[i].pressure_min;
+        pressure[i] = (voltage[i] - pressure_driver->sensors[i].calibr_cfg.voltage_zero) * 
+                      (pressure_driver->sensors[i].calibr_cfg.pressure_1) / 
+                      (pressure_driver->sensors[i].calibr_cfg.voltage_1 - pressure_driver->sensors[i].calibr_cfg.voltage_zero)
        // ESP_LOGI(TAG, "Sensor %d, voltage: %.3f V, pressure: %.3f", i, voltage[i], pressure[i]);
     }
     return PRESSURE_DRIVER_OK;
