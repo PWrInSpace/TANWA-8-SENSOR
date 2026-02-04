@@ -31,9 +31,15 @@ esp_err_t flash_restore_defaults(void) {
     runtime_config = (data_config_t){
         #define DATA(name, type, default_val) .name = default_val,
         #define DATA_ARRAY(name, type, size, default_val) .name = default_val,
+        #define SECTION_BEGIN(name) .name = {
+        #define SECTION_END(name) },
+
         CONFIG_FIELDS
+
         #undef DATA
         #undef DATA_ARRAY
+        #undef SECTION_BEGIN
+        #undef SECTION_END
     };
 
     xSemaphoreGive(runtime_mutex);
@@ -123,15 +129,37 @@ esp_err_t flash_edit_config(data_config_t config) {
     return ESP_OK;
 }
 
+//FIX
 const char **flash_get_field_names(size_t *count) {
+    #define STR2(x) #x
+    #define STR(x) STR2(x)
+    #define JOIN(a,b) a "." b
+    #define SECTION_PREFIX ""
+
+    #define DATA(name, type, default_val) \
+        (SECTION_PREFIX[0] ? JOIN(SECTION_PREFIX, STR(name)) : STR(name)),
+    #define DATA_ARRAY(name, type, size, default_val) \
+        (SECTION_PREFIX[0] ? JOIN(SECTION_PREFIX, STR(name)) : STR(name)),
+    #define SECTION_BEGIN(name) \
+        #undef SECTION_PREFIX \
+        #define SECTION_PREFIX STR(name)
+    #define SECTION_END(name) \
+        #undef SECTION_PREFIX \
+        #define SECTION_PREFIX ""
+
     static const char *names[] = {
-        #define DATA(name, type, default_val) #name,
-        #define DATA_ARRAY(name, type, size, default_val) #name,
         CONFIG_FIELDS
-        #undef DATA
-        #undef DATA_ARRAY
     };
-    
+
+    #undef STR2
+    #undef STR
+    #undef JOIN
+    #undef DATA
+    #undef DATA_ARRAY
+    #undef SECTION_BEGIN
+    #undef SECTION_END
+    #undef CURRENT_SECTION
+
     if (count) *count = sizeof(names)/sizeof(names[0]);
     return names;
 }

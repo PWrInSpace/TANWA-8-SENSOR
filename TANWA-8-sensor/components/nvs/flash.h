@@ -24,9 +24,15 @@ static_assert(sizeof(BLOB_KEY) <= NVS_KEY_NAME_MAX_SIZE, "BLOB_KEY exceeds NVS_K
 typedef struct {
     #define DATA(name, type, default_val) type name;
     #define DATA_ARRAY(name, type, size, default_val) type name[size];
+    #define SECTION_BEGIN(name) struct {
+    #define SECTION_END(name) } name;
+
     CONFIG_FIELDS
+
     #undef DATA
     #undef DATA_ARRAY
+    #undef SECTION_BEGIN
+    #undef SECTION_END
 } data_config_t;
 
 /**
