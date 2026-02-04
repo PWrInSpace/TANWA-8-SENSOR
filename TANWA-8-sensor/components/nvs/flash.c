@@ -129,7 +129,7 @@ esp_err_t flash_edit_config(data_config_t config) {
     return ESP_OK;
 }
 
-//FIX
+//CRITICAL FIX NEEDED
 const char **flash_get_field_names(size_t *count) {
     #define STR2(x) #x
     #define STR(x) STR2(x)
@@ -195,6 +195,7 @@ esp_err_t update_field(data_config_t *config, field_map_t field, const char *val
     return ESP_ERR_NOT_SUPPORTED;
 }
 
+//CRITICAL FIX NEEDED
 esp_err_t flash_edit_field(const char *field_name, const char *value) {
     if (!value || !field_name) return ESP_ERR_INVALID_ARG;
 
