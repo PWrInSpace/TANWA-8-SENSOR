@@ -129,39 +129,110 @@ esp_err_t flash_edit_config(data_config_t config) {
     return ESP_OK;
 }
 
-//CRITICAL FIX NEEDED
 const char **flash_get_field_names(size_t *count) {
-    #define STR2(x) #x
-    #define STR(x) STR2(x)
-    #define JOIN(a,b) a "." b
-    #define SECTION_PREFIX ""
-
-    #define DATA(name, type, default_val) \
-        (SECTION_PREFIX[0] ? JOIN(SECTION_PREFIX, STR(name)) : STR(name)),
-    #define DATA_ARRAY(name, type, size, default_val) \
-        (SECTION_PREFIX[0] ? JOIN(SECTION_PREFIX, STR(name)) : STR(name)),
-    #define SECTION_BEGIN(name) \
-        #undef SECTION_PREFIX \
-        #define SECTION_PREFIX STR(name)
-    #define SECTION_END(name) \
-        #undef SECTION_PREFIX \
-        #define SECTION_PREFIX ""
-
-    static const char *names[] = {
+    enum {
+        FIELDS_COUNT = 0
+        #define DATA(...)             + 1
+        #define DATA_ARRAY(...)       + 1
+        #define SECTION_BEGIN(...)
+        #define SECTION_END(...)
         CONFIG_FIELDS
+        #undef DATA
+        #undef DATA_ARRAY
+        #undef SECTION_BEGIN
+        #undef SECTION_END
     };
 
-    #undef STR2
-    #undef STR
-    #undef JOIN
-    #undef DATA
-    #undef DATA_ARRAY
-    #undef SECTION_BEGIN
-    #undef SECTION_END
-    #undef CURRENT_SECTION
+    static const char *names[FIELDS_COUNT];
+    static int initialized = 0;
 
-    if (count) *count = sizeof(names)/sizeof(names[0]);
+    if (!initialized) {
+        size_t reg_count = 0;
+        field_map_t *nodes = flash_build_registry(&reg_count);
+
+        for (size_t i = 0; i < reg_count; i++) names[i] = nodes[i].name;
+        initialized = 1;
+    }
+
+    if (count) *count = FIELDS_COUNT;
     return names;
+}
+
+typedef struct {
+    const char *name;
+    const char *type;
+    size_t offset;
+    size_t field_size;
+} field_map_t;
+
+field_map_t *flash_build_registry(size_t *out) {
+    enum {
+        TOTAL_SECTION_CHARS = 0
+        #define DATA(...)
+        #define DATA_ARRAY(...)
+        #define SECTION_BEGIN(name)   + sizeof(#name)
+        #define SECTION_END(...)
+        CONFIG_FIELDS
+        #undef DATA
+        #undef DATA_ARRAY
+        #undef SECTION_BEGIN
+        #undef SECTION_END
+    };
+
+    static char name_pool[2048]; //TODO
+    static field_map_t nodes[] = {
+        #define DATA(name, type, default) { #name, #type, 0, sizeof(type) },
+        #define DATA_ARRAY(name, type, size, default) DATA(name, type[size], default)
+        #define SECTION_BEGIN(...)
+        #define SECTION_END(...)
+
+        CONFIG_FIELDS
+        
+        #undef DATA
+        #undef DATA_ARRAY
+        #undef SECTION_BEGIN
+        #undef SECTION_END
+    };
+
+    static int initialized = 0;
+    if (!initialized) {
+        int i = 0;
+        const char *prefix = "";
+        char *pool_ptr = name_pool;
+        data_config_t dummy_instance;
+        data_config_t *ctx = &dummy_instance;
+
+        #define DATA(name, type, default) \
+            nodes[i].offset = (char*)&ctx->name - (char*)&dummy_instance; \
+            nodes[i].name = pool_ptr; \
+            if (prefix[0] == '\0') pool_ptr += sprintf(pool_ptr, "%s", #name) + 1; \
+            else pool_ptr += sprintf(pool_ptr, "%s.%s", prefix, #name) + 1; \
+            i++;
+        #define DATA_ARRAY(name, type, size, default) DATA(name, type[size], default)
+        #define SECTION_BEGIN(name) { \
+            /* offset calculation*/ \
+            typeof(ctx->name) *next_ptr = &ctx->name; \
+            typeof(next_ptr) ctx = next_ptr; \
+            /* full name creation */ \
+            size_t _len = strlen(prefix) + sizeof(#name) + 1; /* (+1) for string termination */ \
+            char _new_path[_len]; \
+            if (prefix[0] == '\0') sprintf(_new_path, "%s", #name); \
+            else sprintf(_new_path, "%s.%s", prefix, #name); \
+            const char *prefix = _new_path;
+        #define SECTION_END(name) } 
+
+        CONFIG_FIELDS
+
+        #undef SECTION_BEGIN
+        #undef SECTION_END
+        #undef DATA
+        #undef DATA_ARRAY
+
+        initialized = 1;
+    }
+
+    if (out) *out = sizeof(nodes) / sizeof(nodes[0]);
+    return nodes;
 }
 
 static esp_err_t parse_int32_t(const char *value, int32_t *out);
@@ -170,13 +241,6 @@ static esp_err_t parse_float(const char *value, float *out);
 static esp_err_t parse_double(const char *value, double *out);
 static esp_err_t parse_char(const char *value, char *out);
 static esp_err_t parse_string(const char *value, char *out, size_t max_size);
-
-typedef struct {
-    const char *name;
-    const char *type;
-    size_t offset;
-    size_t field_size;
-} field_map_t;
 
 esp_err_t update_field(data_config_t *config, field_map_t field, const char *value) {
     if (!config || !value) return ESP_ERR_INVALID_ARG;
@@ -195,7 +259,6 @@ esp_err_t update_field(data_config_t *config, field_map_t field, const char *val
     return ESP_ERR_NOT_SUPPORTED;
 }
 
-//CRITICAL FIX NEEDED
 esp_err_t flash_edit_field(const char *field_name, const char *value) {
     if (!value || !field_name) return ESP_ERR_INVALID_ARG;
 
@@ -205,16 +268,9 @@ esp_err_t flash_edit_field(const char *field_name, const char *value) {
     ret = flash_get_runtime_config(&updated_config);
     if (ret != ESP_OK) return ret;
 
-    // Generate field map automatically using macro
-    field_map_t fields[] = {
-        #define DATA(name, type, default_val) {#name, #type, offsetof(data_config_t, name), sizeof(((data_config_t*)0)->name)},
-        #define DATA_ARRAY(name, type, size, default_val) {#name, #type"["#size"]", offsetof(data_config_t, name), sizeof(((data_config_t*)0)->name)},
-        CONFIG_FIELDS
-        #undef DATA
-        #undef DATA_ARRAY
-    };
+    size_t n = 0;
+    field_map_t *registry = flash_build_registry(&n);
 
-    size_t n = sizeof(fields) / sizeof(fields[0]);
     for (size_t i = 0; i < n; i++) {
         if (strcmp(fields[i].name, field_name) == 0) {
             ret = update_field(&updated_config, fields[i], value);
