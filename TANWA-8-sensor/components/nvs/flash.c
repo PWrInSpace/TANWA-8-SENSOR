@@ -129,6 +129,109 @@ esp_err_t flash_edit_config(data_config_t config) {
     return ESP_OK;
 }
 
+typedef struct {
+    const char *name;
+    const char *type;
+    size_t offset;
+    size_t size;
+} field_map_t;
+
+field_map_t *flash_build_registry(size_t *out) {
+    enum {
+        FIELDS_COUNT = 0
+        #define DATA(...)               + 1
+        #define DATA_ARRAY(...)         + 1
+        #define SECTION_BEGIN(...)
+        #define SECTION_END(...)
+        CONFIG_FIELDS
+        #undef DATA
+        #undef DATA_ARRAY
+        #undef SECTION_BEGIN
+        #undef SECTION_END
+    };
+
+    enum {
+        TOTAL_SECTION_CHARS = 0
+        #define DATA(...)
+        #define DATA_ARRAY(...)
+        #define SECTION_BEGIN(name)     + sizeof(#name)
+        #define SECTION_END(...)
+        CONFIG_FIELDS
+        #undef DATA
+        #undef DATA_ARRAY
+        #undef SECTION_BEGIN
+        #undef SECTION_END
+    };
+
+    enum {
+        TOTAL_NAMES_CHARS = 0
+        #define DATA(name, t, d)              + sizeof(#name)
+        #define DATA_ARRAY(name, t, s, d)     + sizeof(#name)
+        #define SECTION_BEGIN(...)
+        #define SECTION_END(...)
+        CONFIG_FIELDS
+        #undef DATA
+        #undef DATA_ARRAY
+        #undef SECTION_BEGIN
+        #undef SECTION_END
+    };
+
+    static char name_pool[TOTAL_NAMES_CHARS + FIELDS_COUNT * TOTAL_SECTION_CHARS];
+    static field_map_t nodes[] = {
+        #define DATA(name, type, default) { #name, #type, 0, sizeof(type) },
+        #define DATA_ARRAY(name, type, size, default) DATA(name, type[size], default)
+        #define SECTION_BEGIN(...)
+        #define SECTION_END(...)
+
+        CONFIG_FIELDS
+        
+        #undef DATA
+        #undef DATA_ARRAY
+        #undef SECTION_BEGIN
+        #undef SECTION_END
+    };
+
+    static int initialized = 0;
+    if (!initialized) {
+        int i = 0;
+        const char *prefix = "";
+        char *pool_ptr = name_pool;
+        data_config_t dummy_instance;
+        data_config_t *ctx = &dummy_instance;
+
+        #define DATA(_var, _type, _default) \
+            nodes[i].offset = (char*)&ctx->_var - (char*)&dummy_instance; \
+            nodes[i].name = pool_ptr; \
+            if (prefix[0] == '\0') pool_ptr += sprintf(pool_ptr, "%s", #_var) + 1; \
+            else pool_ptr += sprintf(pool_ptr, "%s.%s", prefix, #_var) + 1; \
+            i++;
+        #define DATA_ARRAY(_var, _type, _size, _default) DATA(_var, _type[_size], _default)
+        #define SECTION_BEGIN(_sec_name) { \
+            /* offset calculation*/ \
+            typeof(ctx->_sec_name) *next_ptr = &ctx->_sec_name; \
+            typeof(next_ptr) ctx = next_ptr; \
+            /* full name creation */ \
+            size_t _len = strlen(prefix) + sizeof(#_sec_name) + 1; /* (+1) for string termination */ \
+            char _new_path[_len]; \
+            if (prefix[0] == '\0') sprintf(_new_path, "%s", #_sec_name); \
+            else sprintf(_new_path, "%s.%s", prefix, #_sec_name); \
+            const char *prefix = _new_path;
+        #define SECTION_END(_sec_name) } 
+
+        CONFIG_FIELDS
+
+        #undef SECTION_BEGIN
+        #undef SECTION_END
+        #undef DATA
+        #undef DATA_ARRAY
+
+        initialized = 1;
+    }
+
+    if (out) *out = sizeof(nodes) / sizeof(nodes[0]);
+    return nodes;
+}
+
 const char **flash_get_field_names(size_t *count) {
     enum {
         FIELDS_COUNT = 0
@@ -158,83 +261,6 @@ const char **flash_get_field_names(size_t *count) {
     return names;
 }
 
-typedef struct {
-    const char *name;
-    const char *type;
-    size_t offset;
-    size_t field_size;
-} field_map_t;
-
-field_map_t *flash_build_registry(size_t *out) {
-    enum {
-        TOTAL_SECTION_CHARS = 0
-        #define DATA(...)
-        #define DATA_ARRAY(...)
-        #define SECTION_BEGIN(name)   + sizeof(#name)
-        #define SECTION_END(...)
-        CONFIG_FIELDS
-        #undef DATA
-        #undef DATA_ARRAY
-        #undef SECTION_BEGIN
-        #undef SECTION_END
-    };
-
-    static char name_pool[2048]; //TODO
-    static field_map_t nodes[] = {
-        #define DATA(name, type, default) { #name, #type, 0, sizeof(type) },
-        #define DATA_ARRAY(name, type, size, default) DATA(name, type[size], default)
-        #define SECTION_BEGIN(...)
-        #define SECTION_END(...)
-
-        CONFIG_FIELDS
-        
-        #undef DATA
-        #undef DATA_ARRAY
-        #undef SECTION_BEGIN
-        #undef SECTION_END
-    };
-
-    static int initialized = 0;
-    if (!initialized) {
-        int i = 0;
-        const char *prefix = "";
-        char *pool_ptr = name_pool;
-        data_config_t dummy_instance;
-        data_config_t *ctx = &dummy_instance;
-
-        #define DATA(name, type, default) \
-            nodes[i].offset = (char*)&ctx->name - (char*)&dummy_instance; \
-            nodes[i].name = pool_ptr; \
-            if (prefix[0] == '\0') pool_ptr += sprintf(pool_ptr, "%s", #name) + 1; \
-            else pool_ptr += sprintf(pool_ptr, "%s.%s", prefix, #name) + 1; \
-            i++;
-        #define DATA_ARRAY(name, type, size, default) DATA(name, type[size], default)
-        #define SECTION_BEGIN(name) { \
-            /* offset calculation*/ \
-            typeof(ctx->name) *next_ptr = &ctx->name; \
-            typeof(next_ptr) ctx = next_ptr; \
-            /* full name creation */ \
-            size_t _len = strlen(prefix) + sizeof(#name) + 1; /* (+1) for string termination */ \
-            char _new_path[_len]; \
-            if (prefix[0] == '\0') sprintf(_new_path, "%s", #name); \
-            else sprintf(_new_path, "%s.%s", prefix, #name); \
-            const char *prefix = _new_path;
-        #define SECTION_END(name) } 
-
-        CONFIG_FIELDS
-
-        #undef SECTION_BEGIN
-        #undef SECTION_END
-        #undef DATA
-        #undef DATA_ARRAY
-
-        initialized = 1;
-    }
-
-    if (out) *out = sizeof(nodes) / sizeof(nodes[0]);
-    return nodes;
-}
-
 static esp_err_t parse_int32_t(const char *value, int32_t *out);
 static esp_err_t parse_uint8_t(const char *value, uint8_t *out);
 static esp_err_t parse_float(const char *value, float *out);
@@ -247,7 +273,7 @@ esp_err_t update_field(data_config_t *config, field_map_t field, const char *val
     uint8_t *dest = (uint8_t*)config + field.offset;
 
     // Try parsing arrays first
-    if (strstr(field.type, "char[") != NULL) { return parse_string(value, (char*)dest, field.field_size); }
+    if (strstr(field.type, "char[") != NULL) { return parse_string(value, (char*)dest, field.size); }
 
     // Try parsing standard types
     if (strcmp(field.type, "int32_t") == 0) { return parse_int32_t(value, (int32_t*)dest); }
@@ -272,14 +298,54 @@ esp_err_t flash_edit_field(const char *field_name, const char *value) {
     field_map_t *registry = flash_build_registry(&n);
 
     for (size_t i = 0; i < n; i++) {
-        if (strcmp(fields[i].name, field_name) == 0) {
-            ret = update_field(&updated_config, fields[i], value);
+        if (strcmp(registry[i].name, field_name) == 0) {
+            ret = update_field(&updated_config, registry[i], value);
             if (ret != ESP_OK) return ret;
             return flash_edit_config(updated_config);
         }
     }
 
     return ESP_ERR_INVALID_ARG;
+}
+
+// | --- Printing functions ---|
+
+static void print_field_value(void *addr, const char *type, size_t size) {
+    const char *lb = strchr(type, '[');
+    const char *rb = strchr(type, ']');
+
+    if (lb && rb && rb > lb) { // check if the data is an array
+        if (strstr(type, "char[") != NULL) { // char array (string)
+            printf("'%s'", (char*)addr);
+            return;
+        }
+    }
+
+    if (strcmp(type, "int32_t") == 0)      printf("%ld", *(int32_t*)addr);
+    else if (strcmp(type, "uint8_t") == 0) printf("%u",  *(uint8_t*)addr);
+    else if (strcmp(type, "float") == 0)   printf("%.4f", *(float*)addr);
+    else if (strcmp(type, "double") == 0)  printf("%.6lf", *(double*)addr);
+    else if (strcmp(type, "char") == 0)    printf("'%c'", *(char*)addr);
+    
+    // fallback
+    else {
+        printf("0x");
+        uint8_t *p = (uint8_t*)addr;
+        for (size_t i = 0; i < size; i++) printf("%02X", p[i]);
+    }
+}
+
+void flash_print_config(data_config_t config) {
+    size_t count = 0;
+    field_map_t *registry = flash_build_registry(&count);
+
+    for (size_t i = 0; i < count; i++) {
+        void *field_addr = (uint8_t*)&config + registry[i].offset;
+
+        printf("  %-35s <%s>: ", registry[i].name, registry[i].type); 
+        print_field_value(field_addr, registry[i].type, registry[i].size); 
+        printf("\n");
+    }
 }
 
 // |--- Type parsing functions ---|

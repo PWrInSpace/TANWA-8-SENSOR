@@ -80,6 +80,15 @@ esp_err_t flash_read(data_config_t *out_config);
 esp_err_t flash_get_runtime_config(data_config_t *out_config);
 
 /**
+ * @brief Overwrite the runtime config.
+ * @param config [in] configuration structure
+ * @return `ESP_OK` if successful, error code if failed
+ */
+esp_err_t flash_edit_config(data_config_t config);
+
+// |--- Functions for CLI ---|
+
+/**
  * @brief Edit a single configuration field in runtime config.
  * @param field [in] field name
  * @param value [in] new value
@@ -88,17 +97,16 @@ esp_err_t flash_get_runtime_config(data_config_t *out_config);
 esp_err_t flash_edit_field(const char *field, const char *value);
 
 /**
- * @brief Overwrite the runtime config.
- * @param config [in] configuration structure
- * @return `ESP_OK` if successful, error code if failed
- */
-esp_err_t flash_edit_config(data_config_t config);
-
-/**
  * @brief Get the list of configuration field names.
  * @param count [out] pointer to value holding number of fields
  * @return pointer to an array of field name strings
  */
 const char **flash_get_field_names(size_t *count);
+
+/**
+ * @brief Prints the provided configuration structure to stdout.
+ * @param config The configuration structure to print (passed by value)
+ */
+void flash_print_config(const data_config_t config);
 
 #endif // PWRINSPACE_FLASH_H

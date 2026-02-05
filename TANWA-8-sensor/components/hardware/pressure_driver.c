@@ -68,7 +68,7 @@ pressure_driver_status_t pressure_driver_read_voltage(pressure_driver_struct_t *
     }
 
     int16_t raw; 
-    ads1115_mux_t mux;
+    //ads1115_mux_t mux;
     ads1115_get_value(pressure_driver->ads1115, &raw);
     ads1115_set_input_mux(pressure_driver->ads1115, pressure_driver->sensors[sensor].adc_pin);
     vTaskDelay(pdMS_TO_TICKS(5));
@@ -108,7 +108,7 @@ pressure_driver_status_t pressure_driver_read_pressures(pressure_driver_struct_t
         // Calculate pressure for the current sensor
         pressure[i] = (voltage[i] - pressure_driver->sensors[i].calibr_cfg.voltage_zero) * 
                       (pressure_driver->sensors[i].calibr_cfg.pressure_1) / 
-                      (pressure_driver->sensors[i].calibr_cfg.voltage_1 - pressure_driver->sensors[i].calibr_cfg.voltage_zero)
+                      (pressure_driver->sensors[i].calibr_cfg.voltage_1 - pressure_driver->sensors[i].calibr_cfg.voltage_zero);
        // ESP_LOGI(TAG, "Sensor %d, voltage: %.3f V, pressure: %.3f", i, voltage[i], pressure[i]);
     }
     return PRESSURE_DRIVER_OK;

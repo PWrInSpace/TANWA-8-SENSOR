@@ -148,18 +148,18 @@ esp_err_t board_config_init(void) {
     //*********** ADD HARDWARE CONFIGURATION HERE ***********//
     
     //*********** PRESSURE SENSORS CALIBRATION LOAD ***********//
-    data_config_t config;
-    err = flash_read(&data);
+    data_config_t nvs_config;
+    err = flash_read(&nvs_config);
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "Failed to load calibration config from flash/nvs memory");
         return err;
     }
     
-    const float *p = (const float *)&data.press_calibr;
+    const float *p = (const float *)&nvs_config.press_calibr;
     #define VARIABLES_COUNT 3
     
     #define EXPECTED_CALIBR_SIZE (ADS1115_QUANTITY * PRESSURE_DRIVER_SENSOR_COUNT * VARIABLES_COUNT * sizeof(float))
-    static_assert(sizeof(data.press_calibr) == EXPECTED_CALIBR_SIZE, "Struct padding detected! Pointer arithmetic in calibration loop for pressure sensors will fail.");
+    static_assert(sizeof(nvs_config.press_calibr) == EXPECTED_CALIBR_SIZE, "Struct padding detected! Pointer arithmetic in calibration loop for pressure sensors will fail.");
     
     for (int i = 0; i < ADS1115_QUANTITY; i++) {
         for (int j = 0; j < PRESSURE_DRIVER_SENSOR_COUNT; j++) {

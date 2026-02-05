@@ -8,31 +8,31 @@
 // obecnie wspierane typy: int32_t, uint8_t, float, double, char, char[]
 // możliwość rozszerzenia wspieranych typów w pliku flash.c (należy na samym dole dodać parser i zaktualizować funkcje update_field)
 
-#define CONFIG_FIELDS                                                                           \
-    SECTION_BEGIN(press_calibr)                                                                 \
-    DATA(pressure_driver_0_sensor_0_voltage_zero, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)  \
-    DATA(pressure_driver_0_sensor_0_voltage_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)      \
-    DATA(pressure_driver_0_sensor_0_pressure_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)    \
-    DATA(pressure_driver_0_sensor_1_voltage_zero, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)  \
-    DATA(pressure_driver_0_sensor_1_voltage_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)      \
-    DATA(pressure_driver_0_sensor_1_pressure_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)    \
-    DATA(pressure_driver_0_sensor_2_voltage_zero, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)  \
-    DATA(pressure_driver_0_sensor_2_voltage_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)      \
-    DATA(pressure_driver_0_sensor_2_pressure_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)    \
-    DATA(pressure_driver_0_sensor_3_voltage_zero, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)  \
-    DATA(pressure_driver_0_sensor_3_voltage_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)      \
-    DATA(pressure_driver_0_sensor_3_pressure_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)    \
-    DATA(pressure_driver_1_sensor_0_voltage_zero, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)  \
-    DATA(pressure_driver_1_sensor_0_voltage_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)      \
-    DATA(pressure_driver_1_sensor_0_pressure_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)    \
-    DATA(pressure_driver_1_sensor_1_voltage_zero, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)  \
-    DATA(pressure_driver_1_sensor_1_voltage_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)      \
-    DATA(pressure_driver_1_sensor_1_pressure_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)    \
-    DATA(pressure_driver_1_sensor_2_voltage_zero, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)  \
-    DATA(pressure_driver_1_sensor_2_voltage_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)      \
-    DATA(pressure_driver_1_sensor_2_pressure_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)    \
-    DATA(pressure_driver_1_sensor_3_voltage_zero, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)  \
-    DATA(pressure_driver_1_sensor_3_voltage_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)      \
-    DATA(pressure_driver_1_sensor_3_pressure_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)    \
+#define CONFIG_FIELDS                                                           \
+    SECTION_BEGIN(press_calibr)                                                 \
+    DATA(driver_0_0_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
+    DATA(driver_0_0_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
+    DATA(driver_0_0_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
+    DATA(driver_0_1_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
+    DATA(driver_0_1_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
+    DATA(driver_0_1_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
+    DATA(driver_0_2_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
+    DATA(driver_0_2_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
+    DATA(driver_0_2_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
+    DATA(driver_0_3_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
+    DATA(driver_0_3_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
+    DATA(driver_0_3_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
+    DATA(driver_1_0_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
+    DATA(driver_1_0_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
+    DATA(driver_1_0_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
+    DATA(driver_1_1_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
+    DATA(driver_1_1_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
+    DATA(driver_1_1_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
+    DATA(driver_1_2_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
+    DATA(driver_1_2_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
+    DATA(driver_1_2_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
+    DATA(driver_1_3_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
+    DATA(driver_1_3_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
+    DATA(driver_1_3_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
     SECTION_END(press_calibr)
 // jeżeli ktokolwiek usunie tą linie to kompilator zacznie drzeć ryja (chyba że dodasz pustą linię po ostatniej definicji :)
