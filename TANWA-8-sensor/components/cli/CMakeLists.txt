@@ -1,4 +1,4 @@
 idf_component_register(  SRC_DIRS "."
-                        REQUIRES console
+                        REQUIRES nvs freertos console esp_driver_uart
                          INCLUDE_DIRS "."
 )

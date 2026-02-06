@@ -1,5 +1,5 @@
 idf_component_register(
     SRC_DIRS "."
     INCLUDE_DIRS "."
-    REQUIRES nvs_flash freertos hardware
+    REQUIRES nvs_flash freertos hardware config
 )

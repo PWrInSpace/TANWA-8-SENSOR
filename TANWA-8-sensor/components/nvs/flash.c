@@ -323,8 +323,8 @@ static void print_field_value(void *addr, const char *type, size_t size) {
 
     if (strcmp(type, "int32_t") == 0)      printf("%ld", *(int32_t*)addr);
     else if (strcmp(type, "uint8_t") == 0) printf("%u",  *(uint8_t*)addr);
-    else if (strcmp(type, "float") == 0)   printf("%.4f", *(float*)addr);
-    else if (strcmp(type, "double") == 0)  printf("%.6lf", *(double*)addr);
+    else if (strcmp(type, "float") == 0)   printf("%g", *(float*)addr);
+    else if (strcmp(type, "double") == 0)  printf("%g", *(double*)addr);
     else if (strcmp(type, "char") == 0)    printf("'%c'", *(char*)addr);
     
     // fallback
@@ -342,7 +342,7 @@ void flash_print_config(data_config_t config) {
     for (size_t i = 0; i < count; i++) {
         void *field_addr = (uint8_t*)&config + registry[i].offset;
 
-        printf("  %-35s <%s>: ", registry[i].name, registry[i].type); 
+        printf("|  %-35s <%s>: ", registry[i].name, registry[i].type); 
         print_field_value(field_addr, registry[i].type, registry[i].size); 
         printf("\n");
     }

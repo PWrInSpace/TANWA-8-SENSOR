@@ -9,7 +9,7 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
-#include "data_config.h"
+#include "nvs_data_config.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 

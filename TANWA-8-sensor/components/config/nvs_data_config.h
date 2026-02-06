@@ -35,4 +35,4 @@
     DATA(driver_1_3_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
     DATA(driver_1_3_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
     SECTION_END(press_calibr)
-// jeżeli ktokolwiek usunie tą linie to kompilator zacznie drzeć ryja (chyba że dodasz pustą linię po ostatniej definicji :)
+// jeżeli ktokolwiek usunie tą linie to kompilator zacznie drzeć ryja, chyba że dodasz pustą linię po ostatniej definicji :)

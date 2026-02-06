@@ -124,13 +124,7 @@ esp_err_t board_config_init(void) {
         ESP_LOGE(TAG, "Flash/NVS initialization failed");
         return err;
     }
-
-    err = console_config_init();
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Console initialization failed");
-        return err;
-    }
-
+    
     err = mcu_i2c_init();
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "I2C failed");
@@ -145,6 +139,12 @@ esp_err_t board_config_init(void) {
         return err;
     }
     ESP_LOGI(TAG, "SPI init successful");
+    
+        err = console_config_init();
+        if (err != ESP_OK) {
+            ESP_LOGE(TAG, "Console initialization failed");
+            return err;
+        }
     //*********** ADD HARDWARE CONFIGURATION HERE ***********//
     
     //*********** PRESSURE SENSORS CALIBRATION LOAD ***********//
