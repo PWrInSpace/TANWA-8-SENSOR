@@ -23,7 +23,7 @@
 
 //#define TMP1075_QUANTITY 1
 #define MAX31856_QUANTITY 3
-
+#define ADS1115_QUANTITY 2
 
 typedef struct {
 
@@ -31,8 +31,8 @@ typedef struct {
     led_struct_t status_led;
     tmp1075_struct_t tmp1075;
     max31856_cfg thermocouple[MAX31856_QUANTITY];
-    ads1115_struct_t ads1115[2];
-    pressure_driver_struct_t pressure_driver[2];
+    ads1115_struct_t ads1115[ADS1115_QUANTITY];
+    pressure_driver_struct_t pressure_driver[ADS1115_QUANTITY];
     HDC1080_dev hdc;
 
 } board_config_t;

@@ -27,6 +27,7 @@
 #include "can_config.h"
 #include "BoardData.h"
 #include "console_config.h"
+#include "flash.h"
 
 #define TAG "BOARD_CONFIG"
 
@@ -94,6 +95,8 @@ board_config_t config =
     },
 };
 
+esp_err_t press_sensors_init(void); // code below board_config_init()
+
 esp_err_t board_config_init(void) {
 
     esp_err_t err;
@@ -113,125 +116,119 @@ esp_err_t board_config_init(void) {
     }
 
     err = can_config_init();
-
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "CAN initialization failed");
         return err;
     }
 
-    err = console_config_init();
-
+    err = flash_init();
     if (err != ESP_OK) {
-        ESP_LOGE(TAG, "Console initialization failed");
+        ESP_LOGE(TAG, "Flash/NVS initialization failed");
         return err;
     }
+    
     err = mcu_i2c_init();
-
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "I2C failed");
         return err;
     }
     ESP_LOGI(TAG, "I2C init successful");
-
     
-      err = mcu_spi_init();
-
+    err = mcu_spi_init();
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "SPI failed");
         return err;
     }
     ESP_LOGI(TAG, "SPI init successful");
-    //*********** ADD HARDWARE CONFIGURATION HERE ***********//
+    
+    err = press_sensors_init();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Pressure sensors initialization failed");
+        return err;
+    }
+    ESP_LOGI(TAG, "Pressure sensors init successful");
+    
+    err = console_config_init();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Console initialization failed");
+        return err;
+    }
+    
     // INIT THERMOCOUPLES
-
-
-    config.pressure_driver[0].sensors[0].pressure_max = 350.0; //N2 ZF
-    config.pressure_driver[1].sensors[0].voltage_min = 0.366;
-
-    config.pressure_driver[0].sensors[1].pressure_max = 25.0; //Droid N2'
-    config.pressure_driver[0].sensors[1].voltage_min = 0.368; //Droid N2 20barow 2.55V 0 barów
-    config.pressure_driver[0].sensors[1].voltage_max = 2.8; //Droid N2 20barow 2.55V 0 barów 
-
-    config.pressure_driver[0].sensors[2].pressure_max = 25.0; //DROID N2O
-    config.pressure_driver[0].sensors[2].voltage_min = 0.317; //Droid N2 
-    config.pressure_driver[0].sensors[2].voltage_max = 2.706; //Droid N2 1.33V 10barow -- 2.3V 20 barow
-
-    config.pressure_driver[0].sensors[3].pressure_max = 350.0; //---------
-
-    config.pressure_driver[1].sensors[0].pressure_max = 350.0; // CUT-OFF 20 barow 0.545V 
-    config.pressure_driver[1].sensors[0].voltage_min = 0.366; //Droid N2 20barow 2.55V 0 barów
-
-    config.pressure_driver[1].sensors[1].pressure_max = 350.0; //N2 ZR
-    config.pressure_driver[1].sensors[1].voltage_min = 0.368; //
-    config.pressure_driver[1].sensors[1].voltage_max = 3.085; // 40 barow = 0.688
-
-    config.pressure_driver[1].sensors[2].pressure_max = 350.0; // N2 PR
-    config.pressure_driver[1].sensors[2].voltage_min = 0.368; //
-    config.pressure_driver[1].sensors[2].voltage_max = 3.085; // 40 barow = 0.688
-        
-    config.pressure_driver[1].sensors[3].pressure_max = 100.0; // N20 ZF
-    config.pressure_driver[1].sensors[3].voltage_min = 0.361; //Droid N2 20barow 2.55V 0 barów
-    config.pressure_driver[1].sensors[3].voltage_max = 3.245; //Droid N2 20barow 2.55V 0 barów
-
     uint8_t fault_val;
     
     ESP_LOGI(TAG, "Thermocouple initialization...");
     max31856_init(&config.thermocouple[0], THERMOCOUPLE_CS1);
     ESP_LOGI(TAG, "Thermocouple 1 DONE INIT");
-  max31856_init(&config.thermocouple[1], THERMOCOUPLE_CS2);
-   ESP_LOGI(TAG, "Thermocouple 2 DONE INIT");
-   max31856_init(&config.thermocouple[2], THERMOCOUPLE_CS3);
+    max31856_init(&config.thermocouple[1], THERMOCOUPLE_CS2);
+    ESP_LOGI(TAG, "Thermocouple 2 DONE INIT");
+    max31856_init(&config.thermocouple[2], THERMOCOUPLE_CS3);
     ESP_LOGI(TAG, "Thermocouple set type...");
-   thermocouple_set_type(&config.thermocouple[0], MAX31856_TCTYPE_K);
+
+    thermocouple_set_type(&config.thermocouple[0], MAX31856_TCTYPE_K);
     thermocouple_set_type(&config.thermocouple[1], MAX31856_TCTYPE_K);
     thermocouple_set_type(&config.thermocouple[2], MAX31856_TCTYPE_K);
     ESP_LOGI(TAG, "Thermocouple read fault...");
+
     fault_val = thermocouple_read_fault(&config.thermocouple[0], true);
-    if (fault_val == 1)
-    {
+    if (fault_val == 1) {
         return ESP_FAIL;
     }
+
     fault_val = thermocouple_read_fault(&config.thermocouple[1], true);
-    if (fault_val == 1)
-    {
+    if (fault_val == 1) {
        return ESP_FAIL;
     }
-   fault_val = thermocouple_read_fault(&config.thermocouple[2], true);
-    if (fault_val == 1)
-   {
-        return ESP_FAIL;
-    }
-        
-        
 
-    // INIT PRESSURE SENSOR
-    pressure_driver_status_t ret_press;
-    ret_press = pressure_driver_init(&(config.pressure_driver[0]));
-    if (ret_press != PRESSURE_DRIVER_OK)
-    {
-        ESP_LOGE(TAG, "Failed to initialize pressure driver");
+    fault_val = thermocouple_read_fault(&config.thermocouple[2], true);
+    if (fault_val == 1) {
         return ESP_FAIL;
-    }
-    else
-    {
-        ESP_LOGI(TAG, "Pressure driver 1 initialized");
-    }
-
-    ret_press = pressure_driver_init(&(config.pressure_driver[1]));
-    if (ret_press != PRESSURE_DRIVER_OK)
-    {
-       ESP_LOGE(TAG, "Failed to initialize pressure driver");
-       return ESP_FAIL;
-    }
-    else
-    {
-       ESP_LOGI(TAG, "Pressure driver 2 initialized");
     }
     
     //hd1080_init(&config.hdc);
     return ESP_OK;
 
     //*********** ADD HARDWARE CONFIGURATION HERE ***********//
+}
+
+esp_err_t press_sensors_init(void) {
+    data_config_t nvs_config;
+    esp_err_t err = flash_read(&nvs_config);
+    if (err != ESP_OK) return err;
     
+    const float *p = (const float *)&nvs_config.press_calibr;
+    #define VARIABLES_COUNT 3
     
+    #define EXPECTED_CALIBR_SIZE (ADS1115_QUANTITY * PRESSURE_DRIVER_SENSOR_COUNT * VARIABLES_COUNT * sizeof(float))
+    static_assert(sizeof(nvs_config.press_calibr) == EXPECTED_CALIBR_SIZE, "Struct padding detected! Pointer arithmetic in calibration loop for pressure sensors will fail.");
+    
+    for (int i = 0; i < ADS1115_QUANTITY; i++) {
+        for (int j = 0; j < PRESSURE_DRIVER_SENSOR_COUNT; j++) {
+            int idx = (i * (PRESSURE_DRIVER_SENSOR_COUNT * VARIABLES_COUNT)) + (j * VARIABLES_COUNT);
+            
+            config.pressure_driver[i].sensors[j].calibr_cfg.voltage_zero = p[idx];
+            config.pressure_driver[i].sensors[j].calibr_cfg.voltage_1 = p[idx + 1];
+            config.pressure_driver[i].sensors[j].calibr_cfg.pressure_1 = p[idx + 2];
+        }
+    }
+    
+    // INIT PRESSURE SENSOR
+    pressure_driver_status_t ret_press;
+    ret_press = pressure_driver_init(&(config.pressure_driver[0]));
+    if (ret_press != PRESSURE_DRIVER_OK) {
+        ESP_LOGE(TAG, "Failed to initialize pressure driver");
+        return ESP_FAIL;
+    } else {
+        ESP_LOGI(TAG, "Pressure driver 1 initialized");
+    }
+
+    ret_press = pressure_driver_init(&(config.pressure_driver[1]));
+    if (ret_press != PRESSURE_DRIVER_OK) {
+       ESP_LOGE(TAG, "Failed to initialize pressure driver");
+       return ESP_FAIL;
+    } else {
+       ESP_LOGI(TAG, "Pressure driver 2 initialized");
+    }
+
+    return ESP_OK;
 }

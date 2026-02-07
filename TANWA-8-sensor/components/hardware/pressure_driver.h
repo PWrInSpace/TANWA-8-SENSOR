@@ -27,7 +27,6 @@
 #define PRESSURE_DRIVER_SENSOR_COUNT 4
 
 
-#define PRESSURE_DRIVER_DEFAULT_MIN_PRESSURE 0.0f
 #define PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE 350.0f
 
 //3.6k
@@ -35,7 +34,7 @@
 //#define PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE 3.237f
 
 //3.3k
-#define PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE 0.3759f
+#define PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE 0.3759f
 #define PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE 3.3835f
 
 //#define PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE 0.495f
@@ -48,34 +47,38 @@
       {                                                         \
         .sensor = PRESSURE_DRIVER_SENSOR_1,                     \
         .adc_pin = PRESSURE_DRIVER_SENSOR_1_ADC_PIN,            \
-        .pressure_min = PRESSURE_DRIVER_DEFAULT_MIN_PRESSURE,   \
-        .pressure_max = PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE,   \
-        .voltage_min = PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE,     \
-        .voltage_max = PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE,     \
+        .calibr_cfg = {                                         \
+          .voltage_zero = PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE, \
+          .pressure_1 = PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE,   \
+          .voltage_1 = PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE,     \
+        }                                                       \
       },                                                        \
       {                                                         \
         .sensor = PRESSURE_DRIVER_SENSOR_2,                     \
         .adc_pin = PRESSURE_DRIVER_SENSOR_2_ADC_PIN,            \
-        .pressure_min = PRESSURE_DRIVER_DEFAULT_MIN_PRESSURE,   \
-        .pressure_max = PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE,   \
-        .voltage_min = PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE,                                 \
-        .voltage_max = PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE,     \
+        .calibr_cfg = {                                         \
+          .voltage_zero = PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE, \
+          .pressure_1 = PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE,   \
+          .voltage_1 = PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE,     \
+        }                                                       \
       },                                                        \
       {                                                         \
         .sensor = PRESSURE_DRIVER_SENSOR_3,                     \
         .adc_pin = PRESSURE_DRIVER_SENSOR_3_ADC_PIN,            \
-        .pressure_min = PRESSURE_DRIVER_DEFAULT_MIN_PRESSURE,   \
-        .pressure_max = PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE,   \
-        .voltage_min = PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE,     \
-        .voltage_max = PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE,     \
+        .calibr_cfg = {                                         \
+          .voltage_zero = PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE, \
+          .pressure_1 = PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE,   \
+          .voltage_1 = PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE,     \
+        }                                                       \
       },                                                        \
       {                                                         \
         .sensor = PRESSURE_DRIVER_SENSOR_4,                     \
         .adc_pin = PRESSURE_DRIVER_SENSOR_4_ADC_PIN,            \
-        .pressure_min = PRESSURE_DRIVER_DEFAULT_MIN_PRESSURE,   \
-        .pressure_max = PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE,   \
-        .voltage_min = PRESSURE_DRIVER_DEFAULT_MIN_VOLTAGE,     \
-        .voltage_max = PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE,     \
+        .calibr_cfg = {                                         \
+          .voltage_zero = PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE, \
+          .pressure_1 = PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE,   \
+          .voltage_1 = PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE,     \
+        }                                                       \
       },                                                        \
     }                                                           \
   }
@@ -94,6 +97,12 @@ typedef enum {
     PRESSURE_DRIVER_SENSOR_4_ADC_PIN = ADS1115_MUX_3_GND,
 } pressure_driver_sensor_adc_pin_t;
 
+typedef struct {
+    float voltage_zero;
+    float voltage_1;
+    float pressure_1;
+} pressure_sensor_calibration_config_t;
+
 typedef enum {
     PRESSURE_DRIVER_OK = 0,
     PRESSURE_DRIVER_FAIL = 1,
@@ -103,10 +112,7 @@ typedef enum {
 typedef struct {
     pressure_driver_sensor_t sensor;
     pressure_driver_sensor_adc_pin_t adc_pin;
-    float pressure_min;
-    float pressure_max;
-    float voltage_min;
-    float voltage_max;
+    pressure_sensor_calibration_config_t calibr_cfg;
 } pressure_sensor_struct_t;
 
 typedef struct {
@@ -116,13 +122,11 @@ typedef struct {
 
 pressure_driver_status_t pressure_driver_init(pressure_driver_struct_t *pressure_driver);
 
-pressure_driver_status_t pressure_driver_set_min_pressure(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float pressure);
+pressure_driver_status_t pressure_driver_set_zero_voltage(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float voltage);
 
-pressure_driver_status_t pressure_driver_set_max_pressure(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float pressure);
+pressure_driver_status_t pressure_driver_set_1_voltage(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float voltage);
 
-pressure_driver_status_t pressure_driver_set_min_voltage(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float voltage);
-
-pressure_driver_status_t pressure_driver_set_max_voltage(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float voltage);
+pressure_driver_status_t pressure_driver_set_1_pressure(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float pressure);
 
 pressure_driver_status_t pressure_driver_read_voltage(pressure_driver_struct_t *pressure_driver, pressure_driver_sensor_t sensor, float *voltage);
 
