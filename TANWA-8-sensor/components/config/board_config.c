@@ -193,7 +193,7 @@ esp_err_t board_config_init(void) {
 
 esp_err_t press_sensors_init(void) {
     data_config_t nvs_config;
-    err = flash_read(&nvs_config);
+    esp_err_t err = flash_read(&nvs_config);
     if (err != ESP_OK) return err;
     
     const float *p = (const float *)&nvs_config.press_calibr;
