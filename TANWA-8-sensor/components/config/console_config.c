@@ -16,8 +16,8 @@
 
 // |--- Miscellaneous comands ---|
 
-int restart_device(int argc, char **argv) {
-    ESP_LOGI(TAG, "Restarting device...");
+int reset_device(int argc, char **argv) {
+    ESP_LOGI(TAG, "Resetting device...");
     esp_restart();
     return 0;
 }
@@ -201,10 +201,10 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
     static console_cmd_ex_t cmd[] = {
         {
             .cmd = {
-                .command  = "restart",
-                .help     = "Restarts this device.",
+                .command  = "reset",
+                .help     = "Resets this device.",
                 .hint     = NULL,
-                .func     = restart_device
+                .func     = reset_device
             }
         },
         {
