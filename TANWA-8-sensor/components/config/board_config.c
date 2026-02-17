@@ -145,33 +145,48 @@ esp_err_t board_config_init(void) {
     // INIT THERMOCOUPLES
 
 
-    config.pressure_driver[0].sensors[0].pressure_max = 350.0; //N2 ZF
-    config.pressure_driver[1].sensors[0].voltage_min = 0.366;
+    //PCB LAYOUT NUMERATION -   tak jak są złącza na płytce widoczne tak na dole są przypisane do ciśnień na panelu
+    
+    //
+    //     5 6 7 8
+    //
+    //     4 3 2 1
+    //
 
-    config.pressure_driver[0].sensors[1].pressure_max = 25.0; //Droid N2'
-    config.pressure_driver[0].sensors[1].voltage_min = 0.368; //Droid N2 20barow 2.55V 0 barów
-    config.pressure_driver[0].sensors[1].voltage_max = 2.8; //Droid N2 20barow 2.55V 0 barów 
+    //#################-----N2 ZA FILLEM-----#####################
+    config.pressure_driver[0].sensors[0].pressure_max = 350;
+    config.pressure_driver[0].sensors[0].voltage_min = 0.363;
+   // Config.pressure_driver[0].sensors[0].voltage_MAX = 3.363;
 
-    config.pressure_driver[0].sensors[2].pressure_max = 25.0; //DROID N2O
-    config.pressure_driver[0].sensors[2].voltage_min = 0.317; //Droid N2 
-    config.pressure_driver[0].sensors[2].voltage_max = 2.706; //Droid N2 1.33V 10barow -- 2.3V 20 barow
+    //#################-----DROID N2-----#####################
+    config.pressure_driver[0].sensors[1].pressure_max = 25.0;
+    config.pressure_driver[0].sensors[1].voltage_min = 0.366;
+    config.pressure_driver[0].sensors[1].voltage_max = 2.8;
 
-    config.pressure_driver[0].sensors[3].pressure_max = 350.0; //---------
+    //#################-----DROID N2O-----#####################
+    config.pressure_driver[0].sensors[2].pressure_max = 25.0;
+    config.pressure_driver[0].sensors[2].voltage_min = 0.317;
+    config.pressure_driver[0].sensors[2].voltage_max = 2.706;
 
-    config.pressure_driver[1].sensors[0].pressure_max = 350.0; // CUT-OFF 20 barow 0.545V 
-    config.pressure_driver[1].sensors[0].voltage_min = 0.366; //Droid N2 20barow 2.55V 0 barów
+    //#################-----CUT-OFF N2O-----#####################
+    config.pressure_driver[1].sensors[0].pressure_max = 350; 
+    config.pressure_driver[1].sensors[0].voltage_min = 0.370;
+    config.pressure_driver[1].sensors[0].voltage_max = 3.4; 
 
-    config.pressure_driver[1].sensors[1].pressure_max = 350.0; //N2 ZR
-    config.pressure_driver[1].sensors[1].voltage_min = 0.368; //
-    config.pressure_driver[1].sensors[1].voltage_max = 3.085; // 40 barow = 0.688
+     //#################-----N2-ZA REDUKTOREM-----#####################
+    config.pressure_driver[1].sensors[1].pressure_max = 350.0;
+    config.pressure_driver[1].sensors[1].voltage_min = 0.368; 
+    config.pressure_driver[1].sensors[1].voltage_max = 3.085;
 
-    config.pressure_driver[1].sensors[2].pressure_max = 350.0; // N2 PR
-    config.pressure_driver[1].sensors[2].voltage_min = 0.368; //
-    config.pressure_driver[1].sensors[2].voltage_max = 3.085; // 40 barow = 0.688
+     //#################-----N2-PRZED-REDUKTOREM-----#####################
+    config.pressure_driver[1].sensors[2].pressure_max = 350.0;
+    config.pressure_driver[1].sensors[2].voltage_min = 0.368;
+    config.pressure_driver[1].sensors[2].voltage_max = 3.085;
         
-    config.pressure_driver[1].sensors[3].pressure_max = 100.0; // N20 ZF
-    config.pressure_driver[1].sensors[3].voltage_min = 0.361; //Droid N2 20barow 2.55V 0 barów
-    config.pressure_driver[1].sensors[3].voltage_max = 3.245; //Droid N2 20barow 2.55V 0 barów
+     //#################-----N2O-ZA-FILLEM-----#####################
+    config.pressure_driver[1].sensors[3].pressure_max = 100.0;
+    config.pressure_driver[1].sensors[3].voltage_min = 0.361;
+    config.pressure_driver[1].sensors[3].voltage_max = 3.245;
 
     uint8_t fault_val;
     
