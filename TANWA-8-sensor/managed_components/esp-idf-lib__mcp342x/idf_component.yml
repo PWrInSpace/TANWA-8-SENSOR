@@ -1,0 +1,32 @@
+dependencies:
+  esp-idf-lib/esp_idf_lib_helpers:
+    version: '*'
+  esp-idf-lib/i2cdev:
+    version: '*'
+description: Driver for 18-Bit, delta-sigma ADC MCP3426/MCP3427/MCP3428
+discussion: https://github.com/esp-idf-lib/core/discussions
+documentation: https://esp-idf-lib.github.io/mcp342x/
+files:
+  exclude:
+  - docs/**/*
+issues: https://github.com/esp-idf-lib/mcp342x/issues
+license: BSD-3
+maintainers:
+- Ruslan V. Uss (@UncleRus) <unclerus@gmail.com>
+repository: git://github.com/esp-idf-lib/mcp342x.git
+repository_info:
+  commit_sha: 65cd8ad39459f9f067f17db5726433f501e9ec35
+  path: .
+targets:
+- esp32
+- esp32c2
+- esp32c3
+- esp32c5
+- esp32c6
+- esp32c61
+- esp32h2
+- esp32p4
+- esp32s2
+- esp32s3
+url: https://github.com/esp-idf-lib/core
+version: 1.0.8
