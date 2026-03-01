@@ -48,6 +48,7 @@
 #define CONFIG_I2C_TMP1075_TS2_ADDR 0x4E // TODO: ADD ADRESS2
 
 #include "ads1115.h"
+#include "mcp_driver.h"
 #include "pressure_driver.h"
 #include "max31856.h"
 #include "hdc1080.h"
@@ -140,7 +141,14 @@ esp_err_t board_config_init(void) {
         return err;
     }
     ESP_LOGI(TAG, "SPI init successful");
-    
+
+    err = mcp_driver_init(); //!MUST BE AFTER I2C init!
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "MCP342X failed");
+        return err;
+    }
+    ESP_LOGI(TAG, "MCP342X init successful");
+
     err = press_sensors_init();
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "Pressure sensors initialization failed");
