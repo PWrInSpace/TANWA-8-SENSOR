@@ -17,16 +17,16 @@ esp_err_t mcp_driver_init(void) {
     if (res != ESP_OK) {
         return res;
     }
-
-    mcp.config.mode = MCP342X_CONTINUOUS;
-    mcp.config.resolution = MCP342X_RES_16;
-    mcp.config.gain = MCP342X_GAIN4;
+    
+    mcp.mode = MCP342X_CONTINUOUS;
+    mcp.resolution = MCP342X_RES_16;
+    mcp.gain = MCP342X_GAIN4;
 
     return ESP_OK;
 }
 
 esp_err_t mcp_driver_read_voltage(mcp342x_channel_t channel, float *out_voltage) {
-    mcp.config.channel = channel;
+    mcp.channel = channel;
 
     return mcp342x_get_voltage(&mcp, out_voltage, NULL);
 }
