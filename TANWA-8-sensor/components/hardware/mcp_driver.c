@@ -17,7 +17,7 @@ esp_err_t mcp_driver_init(void) {
     if (res != ESP_OK) {
         return res;
     }
-    
+
     mcp.mode = MCP342X_CONTINUOUS;
     mcp.resolution = MCP342X_RES_16;
     mcp.gain = MCP342X_GAIN4;

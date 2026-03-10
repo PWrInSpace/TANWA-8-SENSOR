@@ -13,6 +13,17 @@
 #define MCP_I2C_PORT CONFIG_I2C_MASTER_PORT_NUM
 #define MCP_ADDR 0x68
 
+typedef struct {
+    uint8_t mcp_addr;
+    mcp342x_channel_t channel[2];
+} mcp342x_driver_t;
+
+#define MCP342X_DRIVER_DEFAULT_CONFIG       \
+{                                           \
+    .channel[0] = MCP342X_CHANNEL1,         \
+    .channel[1] = MCP342X_CHANNEL2         \
+}                                           
+
 esp_err_t mcp_driver_init(void);
 
 esp_err_t mcp_driver_read_voltage(mcp342x_channel_t channel, float *out_voltage);

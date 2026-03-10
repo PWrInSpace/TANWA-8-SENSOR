@@ -87,6 +87,7 @@ board_config_t config =
     },
     .pressure_driver[0] = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115[0]),
     .pressure_driver[1] = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115[1]),
+    .mcp342x = MCP342X_DRIVER_DEFAULT_CONFIG,
     .hdc = {
         .i2c_address = HDC1080_I2C_ADDRESS,
         ._i2c_write = _mcu_i2c_write,
