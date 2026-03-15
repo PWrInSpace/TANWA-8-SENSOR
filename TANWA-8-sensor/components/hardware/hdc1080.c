@@ -70,9 +70,9 @@ void hd1080_init(HDC1080_dev * dev)
 }
 
 void hdc1080_read_temperature(HDC1080_dev *dev) {
-    uint16_t val[2];    
+    uint16_t val[2] = {0, 0};    
     dev->_i2c_write(dev->i2c_address, HDC1080_TEMPERATURE_REG,0,0);
-    //usleep(6350);
+    usleep(6350);
     printf("Temperature Register = 0x%04x\n", val[0]);
     read_reg_16b(dev, HDC1080_TEMPERATURE_REG, &val[0]);
     printf("TEMPERATURE Register =0x%d", val[0]); 
