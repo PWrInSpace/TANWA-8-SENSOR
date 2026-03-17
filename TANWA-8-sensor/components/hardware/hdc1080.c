@@ -59,8 +59,7 @@ esp_err_t write_config_bits(HDC1080_dev *hd1080, const uint8_t mask, const uint8
 
 }
 
-void hd1080_init(HDC1080_dev * dev)
-{
+void hd1080_init(HDC1080_dev * dev) {
     uint16_t val;
     uint8_t v = 0;
     write_config_bits(dev,1,MODE_OFFSET,HDC1080_ACQUISITION_HUMIDITY_AND_TEMPERATURE);
@@ -70,11 +69,10 @@ void hd1080_init(HDC1080_dev * dev)
 }
 
 void hdc1080_read_temperature(HDC1080_dev *dev) {
-    uint16_t val[2] = {0, 0};    
-    dev->_i2c_write(dev->i2c_address, HDC1080_TEMPERATURE_REG,0,0);
-    usleep(6350);
+    uint8_t val[2] = {0, 0};
+    dev->_i2c_write(dev->i2c_address, HDC1080_TEMPERATURE_REG, 0, 0);
     printf("Temperature Register = 0x%04x\n", val[0]);
-    read_reg_16b(dev, HDC1080_TEMPERATURE_REG, &val[0]);
+    // dev->_i2c_pure_read(dev->i2c_address, val, 2);
     printf("TEMPERATURE Register =0x%d", val[0]); 
     printf("HUMIDITY Register =0x%d", val[1]); 
     // Calculate temperature in °C

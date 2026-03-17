@@ -35,6 +35,7 @@
 
 typedef bool (*hdc1080_I2C_write)(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
 typedef bool (*hdc1080_I2C_read)(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
+typedef bool (*hdc1080_I2C_read_pure)(uint8_t address, uint8_t *data, uint8_t len);
 
 typedef struct
 {
@@ -43,6 +44,7 @@ typedef struct
     uint8_t temperature;
     hdc1080_I2C_write _i2c_write;
     hdc1080_I2C_read _i2c_read;
+    hdc1080_I2C_read_pure _i2c_pure_read;
 }HDC1080_dev;
 
 void hd1080_init(HDC1080_dev * dev);

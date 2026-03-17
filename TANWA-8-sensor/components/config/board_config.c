@@ -92,6 +92,7 @@ board_config_t config =
         .i2c_address = HDC1080_I2C_ADDRESS,
         ._i2c_write = _mcu_i2c_write,
         ._i2c_read = _mcu_i2c_read,
+        ._i2c_pure_read = _mcu_i2c_read_pure,
         .temperature = 50,
         .humidity_percentage = 99,
     },

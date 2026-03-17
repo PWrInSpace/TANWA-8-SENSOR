@@ -7,9 +7,9 @@ set(REQUIRED_COMPONENTS log freertos esp_idf_lib_helpers)
 
 # Add version-specific required componenets
 if(EIL_IDF_HAS_ESP_DRIVERS)
-    list(APPEND REQUIRED_COMPONENTS esp_driver_gpio esp_driver_i2c)
+    list(APPEND REQUIRED_COMPONENTS esp_driver_gpio esp_driver_i2c driver)
 else()
-    list(APPEND REQUIRED_COMPONENTS driver)
+    list(APPEND REQUIRED_COMPONENTS driver i2c)
 endif()
 
 # ESP-IDF version detection for automatic driver selection

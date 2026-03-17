@@ -16,6 +16,7 @@
 #include <stdint.h>
 
 #include "driver/i2c.h"
+#include "i2cdev.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -55,5 +56,7 @@ esp_err_t mcu_i2c_init();
 bool _mcu_i2c_write(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
 
 bool _mcu_i2c_read(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len);
+
+bool _mcu_i2c_read_pure(uint8_t address, uint8_t *data, uint8_t len);
 
 #endif // PWRINSPACE_MCU_I2C_CONFIG_H_

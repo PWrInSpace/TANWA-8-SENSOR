@@ -32,7 +32,7 @@
  */
 #include "esp_idf_lib_helpers.h" // For HELPER_TARGET_IS_ESP32 etc.
 #include "i2cdev.h"              // Common header
-#include <driver/i2c.h>          // Legacy I2C driver
+#include "driver/i2c.h"        // Legacy I2C driver
 #include <esp_log.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>

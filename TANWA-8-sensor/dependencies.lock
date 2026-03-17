@@ -73,5 +73,5 @@ direct_dependencies:
 - esp-idf-lib/mcp342x
 - idf
 manifest_hash: 3bd0789b0feb13097113e6251297ea6f6ced76f56cca90256dd575cd34e912b6
-target: esp32
+target: esp32s3
 version: 2.0.0
