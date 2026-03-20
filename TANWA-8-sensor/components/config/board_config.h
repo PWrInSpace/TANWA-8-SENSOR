@@ -17,6 +17,7 @@
 #include "esp_err.h"
 #include "ads1115.h"
 #include "max31856.h"
+#include "mcp_driver.h"
 #include "pressure_driver.h"
 #include "tmp1075.h"
 #include "hdc1080.h"
@@ -33,6 +34,7 @@ typedef struct {
     max31856_cfg thermocouple[MAX31856_QUANTITY];
     ads1115_struct_t ads1115[ADS1115_QUANTITY];
     pressure_driver_struct_t pressure_driver[ADS1115_QUANTITY];
+    mcp342x_driver_t mcp342x;
     HDC1080_dev hdc;
 
 } board_config_t;

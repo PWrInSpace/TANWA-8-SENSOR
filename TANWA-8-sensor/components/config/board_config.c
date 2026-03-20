@@ -48,6 +48,7 @@
 #define CONFIG_I2C_TMP1075_TS2_ADDR 0x4E // TODO: ADD ADRESS2
 
 #include "ads1115.h"
+#include "mcp_driver.h"
 #include "pressure_driver.h"
 #include "max31856.h"
 #include "hdc1080.h"
@@ -86,10 +87,12 @@ board_config_t config =
     },
     .pressure_driver[0] = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115[0]),
     .pressure_driver[1] = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115[1]),
+    .mcp342x = MCP342X_DRIVER_DEFAULT_CONFIG,
     .hdc = {
         .i2c_address = HDC1080_I2C_ADDRESS,
         ._i2c_write = _mcu_i2c_write,
         ._i2c_read = _mcu_i2c_read,
+        ._i2c_pure_read = _mcu_i2c_read_pure,
         .temperature = 50,
         .humidity_percentage = 99,
     },
@@ -140,7 +143,14 @@ esp_err_t board_config_init(void) {
         return err;
     }
     ESP_LOGI(TAG, "SPI init successful");
-    
+
+    err = mcp_driver_init(); //!MUST BE AFTER I2C init!
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "MCP342X failed");
+        return err;
+    }
+    ESP_LOGI(TAG, "MCP342X init successful");
+
     err = press_sensors_init();
     if (err != ESP_OK) {
         ESP_LOGE(TAG, "Pressure sensors initialization failed");

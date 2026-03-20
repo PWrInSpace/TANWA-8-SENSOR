@@ -6,7 +6,7 @@
 ///===-----------------------------------------------------------------------------------------===//
 //#include "driver/i2c_master.h"
 #include "mcu_i2c_config.h"
-#include <string.h>
+#include <string.h> 
 
 #define TAG "MCU_I2C"
 
@@ -19,7 +19,13 @@ static mcu_i2c_config_t mcu_i2c_config = {
 };
 
 esp_err_t mcu_i2c_init() {
-  if (mcu_i2c_config.i2c_init_flag == false) {
+      if (mcu_i2c_config.i2c_init_flag == false) {
+      esp_err_t res = i2cdev_init();
+      if (res != ESP_OK) {
+          ESP_LOGE(TAG, "I2Cdev init failed!");
+          return res;
+      }
+
       i2c_config_t conf;
       conf.mode = I2C_MODE_MASTER;
       conf.sda_io_num = SDA_GPIO;
@@ -54,5 +60,11 @@ bool _mcu_i2c_write(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len) {
 bool _mcu_i2c_read(uint8_t address, uint8_t reg, uint8_t *data, uint8_t len) {
     esp_err_t ret;
     ret = i2c_master_write_read_device(CONFIG_I2C_MASTER_PORT_NUM, address, &reg, 1, data, len, CONFIG_I2C_MASTER_TIMEOUT_MS / portTICK_PERIOD_MS);
+    return (bool)(ret == ESP_OK);
+}
+
+bool _mcu_i2c_read_pure(uint8_t address, uint8_t *data, uint8_t len) {
+    esp_err_t ret;  
+    ret = i2c_master_read_from_device(CONFIG_I2C_MASTER_PORT_NUM, address, data, len, CONFIG_I2C_MASTER_TIMEOUT_MS / portTICK_PERIOD_MS);
     return (bool)(ret == ESP_OK);
 }

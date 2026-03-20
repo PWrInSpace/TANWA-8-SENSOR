@@ -12,6 +12,7 @@
 
 #include "tmp1075.h"
 #include "pressure_driver.h"
+#include "mcp_driver.h"
 #include "max31856.h"
 #include "BoardData.h"
 #include "hdc1080.h"
@@ -34,56 +35,58 @@ esp_err_t measure_task_init(void) {
 
 void measure_task(void*){
 
-         while(1){
-         if (xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(10)) == pdTRUE) {
+    while(1){
+        if (xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(10)) == pdTRUE) {
     
-        tmp1075_status_t ret = tmp1075_get_temp_celsius(&(config.tmp1075), &BoardData.status_temp);
-        pressure_driver_read_pressures(&(config.pressure_driver[1]),BoardData.pressure);
-        float pressure = 0;
-        float pressure2 = 0;
-        float pressure3 = 0;
-        float pressure4 = 0;
-        //pressure_driver_read_pressure(&(config.pressure_driver[0]), 0,&pressure);
-        //pressure_driver_read_pressure(&(config.pressure_driver[0]), 1,&pressure2);
-        //pressure_driver_read_pressure(&(config.pressure_driver[0]), 2,&pressure3);
-        //pressure_driver_read_pressure(&(config.pressure_driver[0]), 3,&pressure4);
-        pressure_driver_read_pressures(&(config.pressure_driver[0]),BoardData.pressure);
-        pressure_driver_read_pressures(&(config.pressure_driver[1]),BoardData.pressure + 4);
-        BoardData.temperature[0] = (thermocouple_read_temperature(&config.thermocouple[0]));
-        BoardData.temperature[1]= (thermocouple_read_temperature(&config.thermocouple[1]));
-        BoardData.temperature[2] = (thermocouple_read_temperature(&config.thermocouple[2]));
+            tmp1075_status_t ret = tmp1075_get_temp_celsius(&(config.tmp1075), &BoardData.status_temp);
+            pressure_driver_read_pressures(&(config.pressure_driver[1]),BoardData.pressure);
+            float pressure = 0;
+            float pressure2 = 0;
+            float pressure3 = 0;
+            float pressure4 = 0;
+            //pressure_driver_read_pressure(&(config.pressure_driver[0]), 0,&pressure);
+            //pressure_driver_read_pressure(&(config.pressure_driver[0]), 1,&pressure2);
+            //pressure_driver_read_pressure(&(config.pressure_driver[0]), 2,&pressure3);
+            //pressure_driver_read_pressure(&(config.pressure_driver[0]), 3,&pressure4);
+            pressure_driver_read_pressures(&(config.pressure_driver[0]),BoardData.pressure);
+            pressure_driver_read_pressures(&(config.pressure_driver[1]),BoardData.pressure + 4);
+            BoardData.temperature[0] = (thermocouple_read_temperature(&config.thermocouple[0]));
+            BoardData.temperature[1]= (thermocouple_read_temperature(&config.thermocouple[1]));
+            BoardData.temperature[2] = (thermocouple_read_temperature(&config.thermocouple[2]));
 
-        printf("################################TEMP_STAT###################################\n");
-        //printf("TEMP_STAT = %f\n", BoardData.status_temp);
+            printf("################################TEMP_STAT###################################\n");
+            //printf("TEMP_STAT = %f\n", BoardData.status_temp);
 
-       printf("################################Pressure###################################\n");
+            // PT100 sensor
+            mcp_driver_read_PT100_temp(config.mcp342x.channel[0], &BoardData.temperature[3]);
+            mcp_driver_read_PT100_temp(config.mcp342x.channel[1], &BoardData.temperature[4]);
+            printf("PT100#1 = %f\n", BoardData.temperature[3]);
+            printf("PT100#2 = %f\n", BoardData.temperature[4]);
 
-        printf("PRESS_1 CUT-OFF N2O = %f\n", BoardData.pressure[4]); // CUTOFF press 1
-        printf("PRESS_2 N2O ZA FILL= %f\n", BoardData.pressure[7]); //press 2 N2O za fillem
-        printf("PRESS_3 N2 PR = %f\n", BoardData.pressure[6]); // N2 PR press 3
-        printf("PRESS_4 N2 ZR = %f\n", BoardData.pressure[5]);  // N2 ZR press 4
-        printf("PRESS_5 N2 ZF = %f\n", BoardData.pressure[0]);   //press 5 N2 ZF 
-        printf("PRESS_6 BLANK = %f\n", BoardData.pressure[3]);    // -------------
-        printf("PRESS_7 DRD N2O = %f\n", BoardData.pressure[2]);    // press 7 DRD N2O
-        printf("PRESS_8  DRD N2 = %f\n", BoardData.pressure[1]); // press 8 DRD N2
+            printf("################################Pressure###################################\n");
+
+            printf("PRESS_1 CUT-OFF N2O = %f\n", BoardData.pressure[4]); // CUTOFF press 1
+            printf("PRESS_2 N2O ZA FILL= %f\n", BoardData.pressure[7]); //press 2 N2O za fillem
+            printf("PRESS_3 N2 PR = %f\n", BoardData.pressure[6]); // N2 PR press 3
+            printf("PRESS_4 N2 ZR = %f\n", BoardData.pressure[5]);  // N2 ZR press 4
+            printf("PRESS_5 N2 ZF = %f\n", BoardData.pressure[0]);   //press 5 N2 ZF 
+            printf("PRESS_6 BLANK = %f\n", BoardData.pressure[3]);    // -------------
+            printf("PRESS_7 DRD N2O = %f\n", BoardData.pressure[2]);    // press 7 DRD N2O
+            printf("PRESS_8  DRD N2 = %f\n", BoardData.pressure[1]); // press 8 DRD N2
+            
+            //PRESSURES DATA
+            // N2 ZF | DRD N2 | DRD N20 | BLANK | CUT-OFF | N2 ZR | N2 PR | N2O ZF 
+
+            //printf("################################Thermocouple###################################\n");
+            // printf("Termocouple_1  FILL N20= %f\n", BoardData.temperature[0]);
+            // printf("Termocouple_2 = SCIANKA %f\n", BoardData.temperature[1]);
+            // printf("Termocouple_3 = %f\n", BoardData.temperature[2]);
+            // hdc1080_read_temperature(&config.hdc);
+            xSemaphoreGive(BoardDataSemaphore);
+            vTaskDelay(pdMS_TO_TICKS(500));
         
-        //PRESSURES DATA
-        // N2 ZF | DRD N2 | DRD N20 | BLANK | CUT-OFF | N2 ZR | N2 PR | N2O ZF 
-
-        
-
-        //printf("################################Thermocouple###################################\n");
-       // printf("Termocouple_1  FILL N20= %f\n", BoardData.temperature[0]);
-      //  printf("Termocouple_2 = SCIANKA %f\n", BoardData.temperature[1]);
-      //  printf("Termocouple_3 = %f\n", BoardData.temperature[2]);
-       // hdc1080_read_temperature(&config.hdc);
-        xSemaphoreGive(BoardDataSemaphore);
-        vTaskDelay(pdMS_TO_TICKS(500));
-
-        
-    } else 
-    {
-        ESP_LOGE(TAG, "Failed to take BoardDataSemaphore");
+        } else {
+            ESP_LOGE(TAG, "Failed to take BoardDataSemaphore");
+        }
     }
-}
 }

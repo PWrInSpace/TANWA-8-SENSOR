@@ -5,7 +5,7 @@
 
 
 typedef struct {
-    float temperature[3];
+    float temperature[2];
     float status_temp;
     float humidity;
     float pressure[8];
