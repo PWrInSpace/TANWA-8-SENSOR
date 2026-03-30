@@ -51,7 +51,7 @@ static int read_temperature(int argc, char **argv) {
 
 static int calibrate_sensor(int argc, char **argv) {
     if (argc != 5) {
-        CONSOLE_WRITE("Uzycie: cal0 <1-8> <p_max> <v_min> <v_max>");
+        CONSOLE_WRITE("Uzycie: cal <1-8> <p_max> <v_min> <v_max>");
         return -1;
     }
     
@@ -105,7 +105,7 @@ static int save_calibration(int argc, char **argv) {
  // cmd     help description   hint  function      args
  {"reset", "Reset the device", NULL, reset_device, NULL, NULL, NULL},
  {"temp-read", "read temperature", NULL, read_temperature, NULL, NULL, NULL},
- {"cal0", "calibrate sensor", NULL, calibrate_sensor, NULL, NULL, NULL},
+ {"cal", " calibrate pressures usage: cal <1-8> <p_max> <v_min> <v_max>", NULL, calibrate_sensor, NULL, NULL, NULL},
  {"save_cal", "save calibration data to NVS", NULL, save_calibration, NULL, NULL, NULL},
  };
 
