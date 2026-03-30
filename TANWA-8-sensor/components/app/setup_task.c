@@ -10,6 +10,7 @@
 #include "max31856.h"
 
 #include "measure_task.h"
+#include "nvs_flash.h"
 
 #define TAG "APP"
 extern board_config_t config;
@@ -19,7 +20,13 @@ static TaskHandle_t setup_task_handle = NULL;
 
 void setup_task(void *arg) {
     esp_err_t err;
-
+    err =nvs_flash_init();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "NVS Flash initialization failed");
+        vTaskDelete(NULL);
+    }
+     ESP_LOGI(TAG, "NVS Flash initialized");
+    vTaskDelay(100/ portTICK_PERIOD_MS); // Delay to ensure NVS is ready before proceeding
     err = board_config_init();
 
     if (err != ESP_OK) {

@@ -50,6 +50,8 @@
 #include "pressure_driver.h"
 #include "max31856.h"
 #include "hdc1080.h"
+#include "console_config.h"
+#include "nvs_driver.h"
 
 void _led_delay(uint32_t _ms) {
     vTaskDelay(_ms / portTICK_PERIOD_MS);
@@ -93,6 +95,35 @@ board_config_t config =
         .humidity_percentage = 99,
     },
 };
+
+void load_device_configuration() {
+    // 1. Najpierw ustawiasz swoje domyślne wartości (te które wkleiłeś wcześniej)
+    // ... (tutaj Twój kod z przypisaniem stałych do config.pressure_driver...)
+
+    // 2. Próbujemy dociągnąć kalibrację z NVS
+    nvs_cal_t cal;
+    size_t sz = sizeof(nvs_cal_t);
+    nvs_handle_t h;
+
+    if (nvs_open("storage", NVS_READONLY, &h) == ESP_OK) {
+        esp_err_t err = nvs_get_blob(h, "cal_only", &cal, &sz);
+        nvs_close(h);
+
+        if (err == ESP_OK) {
+            for (int i = 0; i < 4; i++) {
+                config.pressure_driver[0].sensors[i].pressure_max = cal.s[i].p_max;
+                config.pressure_driver[0].sensors[i].voltage_min  = cal.s[i].v_min;
+                config.pressure_driver[0].sensors[i].voltage_max  = cal.s[i].v_max;
+
+                // Driver 1 (Sensory 5-8)
+                config.pressure_driver[1].sensors[i].pressure_max = cal.s[i+4].p_max;
+                config.pressure_driver[1].sensors[i].voltage_min  = cal.s[i+4].v_min;
+                config.pressure_driver[1].sensors[i].voltage_max  = cal.s[i+4].v_max;
+            }
+            ESP_LOGI("NVS", "Nadpisano wartości domyślne danymi z NVS.");
+        }
+    }
+}
 
 esp_err_t board_config_init(void) {
 
@@ -155,37 +186,39 @@ esp_err_t board_config_init(void) {
 
     //#################-----N2 ZA FILLEM-----#####################
     config.pressure_driver[0].sensors[0].pressure_max = 350;
-    config.pressure_driver[0].sensors[0].voltage_min = 0.363;
-   // Config.pressure_driver[0].sensors[0].voltage_MAX = 3.363;
+    config.pressure_driver[0].sensors[0].voltage_min
+     = 0.363;
+    config.pressure_driver[0].sensors[0].voltage_max = 3.465;
+
 
     //#################-----DROID N2-----#####################
     config.pressure_driver[0].sensors[1].pressure_max = 25.0;
-    config.pressure_driver[0].sensors[1].voltage_min = 0.366;
-    config.pressure_driver[0].sensors[1].voltage_max = 2.8;
+    config.pressure_driver[0].sensors[1].voltage_min = 0.373;
+    config.pressure_driver[0].sensors[1].voltage_max = 3.26;
 
     //#################-----DROID N2O-----#####################
     config.pressure_driver[0].sensors[2].pressure_max = 25.0;
-    config.pressure_driver[0].sensors[2].voltage_min = 0.317;
-    config.pressure_driver[0].sensors[2].voltage_max = 2.706;
+    config.pressure_driver[0].sensors[2].voltage_min = 0.37;
+    config.pressure_driver[0].sensors[2].voltage_max = 3.36;
 
     //#################-----CUT-OFF N2O-----#####################
     config.pressure_driver[1].sensors[0].pressure_max = 350; 
-    config.pressure_driver[1].sensors[0].voltage_min = 0.370;
+    config.pressure_driver[1].sensors[0].voltage_min = 0.360;
     config.pressure_driver[1].sensors[0].voltage_max = 3.4; 
 
      //#################-----N2-ZA REDUKTOREM-----#####################
     config.pressure_driver[1].sensors[1].pressure_max = 350.0;
-    config.pressure_driver[1].sensors[1].voltage_min = 0.368; 
-    config.pressure_driver[1].sensors[1].voltage_max = 3.085;
+    config.pressure_driver[1].sensors[1].voltage_min = 0.375; 
+    config.pressure_driver[1].sensors[1].voltage_max = 3.145;
 
      //#################-----N2-PRZED-REDUKTOREM-----#####################
     config.pressure_driver[1].sensors[2].pressure_max = 350.0;
-    config.pressure_driver[1].sensors[2].voltage_min = 0.368;
-    config.pressure_driver[1].sensors[2].voltage_max = 3.085;
+    config.pressure_driver[1].sensors[2].voltage_min = 0.372;
+            config.pressure_driver[1].sensors[2].voltage_max = 3.135;
         
      //#################-----N2O-ZA-FILLEM-----#####################
     config.pressure_driver[1].sensors[3].pressure_max = 100.0;
-    config.pressure_driver[1].sensors[3].voltage_min = 0.361;
+    config.pressure_driver[1].sensors[3].voltage_min = 0.363;
     config.pressure_driver[1].sensors[3].voltage_max = 3.245;
 
     uint8_t fault_val;
