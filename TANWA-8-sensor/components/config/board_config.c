@@ -184,6 +184,7 @@ esp_err_t board_config_init(void) {
     //     4 3 2 1
     //
 
+    /*
     //#################-----N2 ZA FILLEM-----#####################
     config.pressure_driver[0].sensors[0].pressure_max = 350;
     config.pressure_driver[0].sensors[0].voltage_min
@@ -214,12 +215,16 @@ esp_err_t board_config_init(void) {
      //#################-----N2-PRZED-REDUKTOREM-----#####################
     config.pressure_driver[1].sensors[2].pressure_max = 350.0;
     config.pressure_driver[1].sensors[2].voltage_min = 0.372;
-            config.pressure_driver[1].sensors[2].voltage_max = 3.135;
+    config.pressure_driver[1].sensors[2].voltage_max = 3.135;
         
      //#################-----N2O-ZA-FILLEM-----#####################
     config.pressure_driver[1].sensors[3].pressure_max = 100.0;
     config.pressure_driver[1].sensors[3].voltage_min = 0.363;
     config.pressure_driver[1].sensors[3].voltage_max = 3.245;
+
+    */
+
+    load_device_configuration();
 
     uint8_t fault_val;
     
