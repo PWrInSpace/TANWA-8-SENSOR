@@ -11,10 +11,32 @@
 /// and available commands for debugging/testing purposes.
 ///===-----------------------------------------------------------------------------------------===//
 #include "console_config.h"
+#include "BoardData.h"
 
 #define TAG "CONSOLE_CONFIG"
 
 // |--- Miscellaneous comands ---|
+
+
+int print_pressures() {
+    printf("\n\033[1;36m/==================== PRESSURE MONITOR ====================\\\033[0m\n");
+    printf("\033[1;36m| ID |       SENSOR NAME       |      VALUE [bar]      |\033[0m\n");
+    printf("\033[1;36m|----|-------------------------|-----------------------|\033[0m\n");
+
+    
+    printf("| P1 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "CUT-OFF N2O",      BoardData.pressure[4]);
+    printf("| P2 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "N2O ZA FILLEM",    BoardData.pressure[7]);
+    printf("| P3 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "N2 PR",           BoardData.pressure[6]);
+    printf("| P4 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "N2 ZR",           BoardData.pressure[5]);
+    printf("| P5 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "N2 ZF",           BoardData.pressure[0]);
+    printf("| P6 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "BLANK",           BoardData.pressure[3]);
+    printf("| P7 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "DRD N2O",         BoardData.pressure[2]);
+    printf("| P8 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "DRD N2",          BoardData.pressure[1]);
+
+    printf("\033[1;36m\\==========================================================/\033[0m\n\n");
+    fflush(stdout);
+    return 0;
+}
 
 int reset_device(int argc, char **argv) {
     ESP_LOGI(TAG, "Resetting device...");
@@ -264,6 +286,15 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
                 .hint     = NULL,
                 .func     = erase_flash,
                 .argtable = &erase_flash_args
+            }
+        },
+        {
+            .cmd = {
+                .command = "pp",
+                .help = "Prints pressures read from sensors in a nice format.",
+                .hint = NULL,
+                .func = print_pressures,
+                .argtable = NULL
             }
         }
     };

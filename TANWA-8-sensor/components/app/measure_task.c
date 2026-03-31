@@ -53,19 +53,7 @@ void measure_task(void*){
         BoardData.temperature[1]= (thermocouple_read_temperature(&config.thermocouple[1]));
         BoardData.temperature[2] = (thermocouple_read_temperature(&config.thermocouple[2]));
 
-        printf("################################TEMP_STAT###################################\n");
-        //printf("TEMP_STAT = %f\n", BoardData.status_temp);
-
-       printf("################################Pressure###################################\n");
-
-        printf("PRESS_1 CUT-OFF N2O = %f\n", BoardData.pressure[4]); // CUTOFF press 1
-        printf("PRESS_2 N2O ZA FILL= %f\n", BoardData.pressure[7]); //press 2 N2O za fillem
-        printf("PRESS_3 N2 PR = %f\n", BoardData.pressure[6]); // N2 PR press 3
-        printf("PRESS_4 N2 ZR = %f\n", BoardData.pressure[5]);  // N2 ZR press 4
-        printf("PRESS_5 N2 ZF = %f\n", BoardData.pressure[0]);   //press 5 N2 ZF 
-        printf("PRESS_6 BLANK = %f\n", BoardData.pressure[3]);    // -------------
-        printf("PRESS_7 DRD N2O = %f\n", BoardData.pressure[2]);    // press 7 DRD N2O
-        printf("PRESS_8  DRD N2 = %f\n", BoardData.pressure[1]); // press 8 DRD N2
+        //print_pressures();
         
         //PRESSURES DATA
         // N2 ZF | DRD N2 | DRD N20 | BLANK | CUT-OFF | N2 ZR | N2 PR | N2O ZF 
@@ -78,7 +66,7 @@ void measure_task(void*){
       //  printf("Termocouple_3 = %f\n", BoardData.temperature[2]);
        // hdc1080_read_temperature(&config.hdc);
         xSemaphoreGive(BoardDataSemaphore);
-        vTaskDelay(pdMS_TO_TICKS(500));
+        vTaskDelay(pdMS_TO_TICKS(1000));
 
         
     } else 
