@@ -56,11 +56,21 @@ static int read_temperature(int argc, char **argv) {
 
 // |--- Pressure sensors calibration commands ---|
 
+static struct {
+    struct arg_str *field;
+    struct arg_str *value;
+    struct arg_end *end;
+} calibrate_sensor_args;
+
 int press_tare(int argc, char **argv) {
     float voltage;
     pressure_driver_status_t ret;
     data_config_t new_config;
-    flash_get_runtime_config(&new_config);
+
+    if (flash_get_runtime_config(&new_config) != ESP_OK) {
+        printf("Couldn't retrieve runtime config");
+        return 0;
+    }
 
     float *config_fields[ADS1115_QUANTITY * PRESSURE_DRIVER_SENSOR_COUNT] = {
         &new_config.press_calibr.driver_0_0_volt_0,
@@ -84,10 +94,143 @@ int press_tare(int argc, char **argv) {
             *config_fields[4*i + j] = voltage;
         }
     }
+
+    // Apply configuration
+    for (int i = 0; i < ADS1115_QUANTITY; i++) {
+        for (int j = 0; j < PRESSURE_DRIVER_SENSOR_COUNT; j++) {
+            ret = pressure_driver_set_zero_voltage(&config.pressure_driver[i], j, *config_fields[4*i + j]);
+            if (ret != PRESSURE_DRIVER_OK) {
+                printf("Calibration failed while setting voltage for driver '%d' (out of %d), sensor '%d' (out of %d).", i+1, ADS1115_QUANTITY, j+1, PRESSURE_DRIVER_SENSOR_COUNT);
+                return 0;
+            }   
+        }
+    }
     flash_edit_config(new_config);
 
     printf("Successfully calibrated all sensors for pressure of 0 bars. Use `display_config` to see calibration values. Remember to use `save_config` to save and apply your changes\n");
     return 0;
+}
+
+static esp_err_t parse_float(const char *value, float *out) {
+    if (!value || !out) return ESP_ERR_INVALID_ARG;
+    char *endptr = NULL;
+    *out = strtof(value, &endptr);
+    if (*endptr != '\0') return ESP_ERR_INVALID_ARG;
+    return ESP_OK;
+}
+
+int calibrate_sensor(int argc, char **argv) {
+    if (argc < 3) {
+        print_cmd_usage(argv[0]);
+        return 0;
+    }
+
+    const char *field = NULL;
+    const char *value = NULL;
+    
+    // Attempt to parse arguments
+    int nerrors = arg_parse(argc, argv, (void **)&calibrate_sensor_args);
+
+    if (nerrors == 0) {
+        field = calibrate_sensor_args.field->sval[0];
+        value = calibrate_sensor_args.value->sval[0];
+    } else if (argc == 3) {
+        field = argv[1];
+        value = argv[2];
+    }
+
+    if (!field || !value) {
+        arg_print_errors(stdout, calibrate_sensor_args.end, argv[0]);
+        return 0;
+    }
+
+    float press;
+    esp_err_t err;
+    err = parse_float(value, &press);
+    if (err != ESP_OK) {
+        printf("Couldn't parse provided value argument\nErr: %s\n", esp_err_to_name(err));
+        return 0;
+    }
+
+    data_config_t new_config;
+    if (flash_get_runtime_config(&new_config) != ESP_OK) {
+        printf("Couldn't retrieve runtime config");
+        return 0;
+    }
+
+    struct {
+        const char *key;
+        float *ptrs[2];
+    } sensor_map[] = {
+        {"CUT-OFF_N2O",    {&new_config.press_calibr.driver_0_0_volt_1, &new_config.press_calibr.driver_0_0_press_1}},
+        {"N2O_ZA_FILLEM",  {&new_config.press_calibr.driver_0_1_volt_1, &new_config.press_calibr.driver_0_1_press_1}},
+        {"N2_PR",          {&new_config.press_calibr.driver_0_2_volt_1, &new_config.press_calibr.driver_0_2_press_1}},
+        {"N2_ZR",          {&new_config.press_calibr.driver_0_3_volt_1, &new_config.press_calibr.driver_0_3_press_1}},
+        {"N2_ZF",          {&new_config.press_calibr.driver_1_0_volt_1, &new_config.press_calibr.driver_1_0_press_1}},
+        {"BLANK",          {&new_config.press_calibr.driver_1_1_volt_1, &new_config.press_calibr.driver_1_1_press_1}},
+        {"DRD_N20",        {&new_config.press_calibr.driver_1_2_volt_1, &new_config.press_calibr.driver_1_2_press_1}},
+        {"DRD_N2",         {&new_config.press_calibr.driver_1_3_volt_1, &new_config.press_calibr.driver_1_3_press_1}}
+    };
+    size_t n = sizeof(sensor_map) / sizeof(sensor_map[0]);;
+
+    float *volatage_1 = NULL, *pressure_1 = NULL;
+    int sensor_num = 0;
+    for (size_t i = 0; i < n; i++) {
+        if (strcmp(sensor_map[i].key, field) == 0) {
+            volatage_1 = sensor_map[i].ptrs[0];
+            pressure_1 = sensor_map[i].ptrs[1];
+            sensor_num = i;
+            break; 
+        }
+    }
+
+    if (volatage_1 == NULL || pressure_1 == NULL) {
+        printf("Couldn't parse provided field argument.");
+        return 0;
+    }
+
+    float voltage;
+    pressure_driver_read_voltage(&config.pressure_driver[sensor_num/4], sensor_num%4, &voltage);
+    *volatage_1 = voltage;
+    *pressure_1 = press;
+
+    flash_edit_config(new_config);
+    pressure_driver_set_1_voltage(&config.pressure_driver[sensor_num/4], sensor_num%4, voltage);
+    pressure_driver_set_1_pressure(&config.pressure_driver[sensor_num/4], sensor_num%4, press);
+
+    printf("Successfully calibrated %s sensor for pressure of %lf bars. Use `display_config` to see calibration values. Remember to use `save_config` to save and apply your changes\n", field, press);
+    return 0;
+}
+
+void calibrate_sensor_completion(const char *buf, linenoiseCompletions *lc) {
+    if (!buf || !lc) return;
+
+    // get list of all possible argument strings
+    const char *fields[] = {
+        "CUT-OFF_N2O",
+        "N2O_ZA_FILLEM",
+        "N2_PR",
+        "N2_ZR",
+        "N2_ZF",
+        "BLANK",
+        "DRD_N20",
+        "DRD_N2"
+    };
+    size_t n = sizeof(fields) / sizeof(fields[0]);
+
+    cli_split_t split = cli_split_last_token(buf);
+
+    for (size_t i = 0; i < n; i++) {
+        // check if argument string can qualify as completion
+        if (split.token_len < strlen(fields[i]) && strncmp(split.token, fields[i], split.token_len) == 0) {
+            size_t len = split.prefix_len + strlen(fields[i]) + 1;
+            char *completion = malloc(len);
+            snprintf(completion, len, "%.*s%s", split.prefix_len, split.prefix, fields[i]);
+
+            linenoiseAddCompletion(lc, completion);
+            free(completion);
+        }
+    }
 }
 
 // |--- Commands for Flash memory module ---|
@@ -255,6 +398,10 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
     erase_flash_args.confirmation = arg_str1("c", "confirm", "<Y|N>", "Confirmation, so nobody will accidentally erase data stored in flash memory");
     erase_flash_args.end = arg_end(1);
 
+    calibrate_sensor_args.field = arg_str1("f", "sensor", "<string>", "Pressure sensor to clibrate");
+    calibrate_sensor_args.value = arg_str1("v", "pressure", "<int>", "Pressure reading from manometer");
+    calibrate_sensor_args.end = arg_end(2);
+
     // setup all commands
     static console_cmd_ex_t cmd[] = {
         {
@@ -326,11 +473,10 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
         },
         {
             .cmd = {
-                .command = "pp",
-                .help = "Prints pressures read from sensors in a nice format.",
-                .hint = NULL,
-                .func = print_pressures,
-                .argtable = NULL
+                .command  = "pp",
+                .help     = "Prints pressures read from sensors in a nice format.",
+                .hint     = NULL,
+                .func     = print_pressures,
             }
         },
         {
@@ -338,8 +484,18 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
                 .command  = "press_tare",
                 .help     = "Calibrte all pressure sensors for 0 bar",
                 .hint     = NULL,
-                .func     = press_tare
+                .func     = press_tare,
             }
+        },
+        {
+            .cmd = {
+                .command  = "calibr_sensor",
+                .help     = "Resets this device.",
+                .hint     = NULL,
+                .func     = calibrate_sensor,
+                .argtable = &calibrate_sensor_args
+            },
+            .arg_completion = calibrate_sensor_completion
         }
     };
 
