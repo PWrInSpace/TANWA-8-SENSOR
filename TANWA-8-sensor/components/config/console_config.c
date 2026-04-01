@@ -158,19 +158,18 @@ int calibrate_sensor(int argc, char **argv) {
         return 0;
     }
 
-    // TODO IMPORTANT!!! Adjust drivers with sesore, they DO NOT corelate rn
     struct {
         const char *key;
         float *ptrs[2];
     } sensor_map[] = {
-        {"CUT-OFF_N2O",    {&new_config.press_calibr.driver_0_0_volt_1, &new_config.press_calibr.driver_0_0_press_1}},
-        {"N2O_ZA_FILLEM",  {&new_config.press_calibr.driver_0_1_volt_1, &new_config.press_calibr.driver_0_1_press_1}},
-        {"N2_PR",          {&new_config.press_calibr.driver_0_2_volt_1, &new_config.press_calibr.driver_0_2_press_1}},
-        {"N2_ZR",          {&new_config.press_calibr.driver_0_3_volt_1, &new_config.press_calibr.driver_0_3_press_1}},
-        {"N2_ZF",          {&new_config.press_calibr.driver_1_0_volt_1, &new_config.press_calibr.driver_1_0_press_1}},
-        {"BLANK",          {&new_config.press_calibr.driver_1_1_volt_1, &new_config.press_calibr.driver_1_1_press_1}},
-        {"DRD_N20",        {&new_config.press_calibr.driver_1_2_volt_1, &new_config.press_calibr.driver_1_2_press_1}},
-        {"DRD_N2",         {&new_config.press_calibr.driver_1_3_volt_1, &new_config.press_calibr.driver_1_3_press_1}}
+        {"N2_ZF",               {&new_config.press_calibr.driver_0_0_volt_1, &new_config.press_calibr.driver_0_0_press_1}},
+        {"DRD_N2",              {&new_config.press_calibr.driver_0_1_volt_1, &new_config.press_calibr.driver_0_1_press_1}},
+        {"DRD_N20",             {&new_config.press_calibr.driver_0_2_volt_1, &new_config.press_calibr.driver_0_2_press_1}},
+        {"BLANK",               {&new_config.press_calibr.driver_0_3_volt_1, &new_config.press_calibr.driver_0_3_press_1}},
+        {"CUT-OFF_ZA_FILLEM",   {&new_config.press_calibr.driver_1_0_volt_1, &new_config.press_calibr.driver_1_0_press_1}},
+        {"N2_ZR",               {&new_config.press_calibr.driver_1_1_volt_1, &new_config.press_calibr.driver_1_1_press_1}},
+        {"N2_PR",               {&new_config.press_calibr.driver_1_2_volt_1, &new_config.press_calibr.driver_1_2_press_1}},
+        {"N2O_ZA_FILLEM",       {&new_config.press_calibr.driver_1_3_volt_1, &new_config.press_calibr.driver_1_3_press_1}}
     };
     size_t n = sizeof(sensor_map) / sizeof(sensor_map[0]);;
 
@@ -214,7 +213,7 @@ void calibrate_sensor_completion(const char *buf, linenoiseCompletions *lc) {
         "N2_ZR",
         "N2_ZF",
         "BLANK",
-        "DRD_N20",
+        "DRD_N2O",
         "DRD_N2"
     };
     size_t n = sizeof(fields) / sizeof(fields[0]);
