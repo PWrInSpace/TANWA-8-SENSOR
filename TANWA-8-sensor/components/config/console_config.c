@@ -68,7 +68,7 @@ int press_tare(int argc, char **argv) {
     data_config_t new_config;
 
     if (flash_get_runtime_config(&new_config) != ESP_OK) {
-        printf("Couldn't retrieve runtime config");
+        printf("Couldn't retrieve runtime config\n");
         return 0;
     }
 
@@ -107,7 +107,7 @@ int press_tare(int argc, char **argv) {
     }
     flash_edit_config(new_config);
 
-    printf("Successfully calibrated all sensors for pressure of 0 bars. Use `display_config` to see calibration values. Remember to use `save_config` to save and apply your changes\n");
+    printf("Successfully calibrated all sensors for pressure of 0 bars. Remember to use `save_config` to save your changes\n");
     return 0;
 }
 
@@ -148,13 +148,13 @@ int calibrate_sensor(int argc, char **argv) {
     esp_err_t err;
     err = parse_float(value, &press);
     if (err != ESP_OK) {
-        printf("Couldn't parse provided value argument\nErr: %s\n", esp_err_to_name(err));
+        printf("Couldn't parse provided value argument\n");
         return 0;
     }
 
     data_config_t new_config;
     if (flash_get_runtime_config(&new_config) != ESP_OK) {
-        printf("Couldn't retrieve runtime config");
+        printf("Couldn't retrieve runtime config\n");
         return 0;
     }
 
@@ -173,32 +173,32 @@ int calibrate_sensor(int argc, char **argv) {
     };
     size_t n = sizeof(sensor_map) / sizeof(sensor_map[0]);;
 
-    float *volatage_1 = NULL, *pressure_1 = NULL;
+    float *voltage_1 = NULL, *pressure_1 = NULL;
     int sensor_num = 0;
     for (size_t i = 0; i < n; i++) {
         if (strcmp(sensor_map[i].key, field) == 0) {
-            volatage_1 = sensor_map[i].ptrs[0];
+            voltage_1 = sensor_map[i].ptrs[0];
             pressure_1 = sensor_map[i].ptrs[1];
             sensor_num = i;
             break; 
         }
     }
 
-    if (volatage_1 == NULL || pressure_1 == NULL) {
-        printf("Couldn't parse provided field argument.");
+    if (voltage_1 == NULL || pressure_1 == NULL) {
+        printf("Couldn't parse provided field argument\n");
         return 0;
     }
 
     float voltage;
     pressure_driver_read_voltage(&config.pressure_driver[sensor_num/4], sensor_num%4, &voltage);
-    *volatage_1 = voltage;
+    *voltage_1 = voltage;
     *pressure_1 = press;
 
     flash_edit_config(new_config);
     pressure_driver_set_1_voltage(&config.pressure_driver[sensor_num/4], sensor_num%4, voltage);
     pressure_driver_set_1_pressure(&config.pressure_driver[sensor_num/4], sensor_num%4, press);
 
-    printf("Successfully calibrated %s sensor for pressure of %lf bars. Use `display_config` to see calibration values. Remember to use `save_config` to save and apply your changes\n", field, press);
+    printf("Successfully calibrated %s sensor for pressure of %g bars. Remember to use `save_config` to save your changes\n", field, press);
     return 0;
 }
 
