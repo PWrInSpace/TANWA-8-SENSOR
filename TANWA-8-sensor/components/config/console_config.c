@@ -11,12 +11,12 @@
 /// and available commands for debugging/testing purposes.
 ///===-----------------------------------------------------------------------------------------===//
 #include "console_config.h"
+#include "board_config.h"
 #include "BoardData.h"
 
 #define TAG "CONSOLE_CONFIG"
 
 // |--- Miscellaneous comands ---|
-
 
 int print_pressures() {
     printf("\n\033[1;36m/==================== PRESSURE MONITOR ====================\\\033[0m\n");
@@ -51,6 +51,42 @@ static int read_temperature(int argc, char **argv) {
     CONSOLE_WRITE("TMP1075 Temperature:");
     CONSOLE_WRITE("#1 => temp1 = %f", temp);
 
+    return 0;
+}
+
+// |--- Pressure sensors calibration commands ---|
+
+int press_tare(int argc, char **argv) {
+    float voltage;
+    pressure_driver_status_t ret;
+    data_config_t new_config;
+    flash_get_runtime_config(&new_config);
+
+    float *config_fields[ADS1115_QUANTITY * PRESSURE_DRIVER_SENSOR_COUNT] = {
+        &new_config.press_calibr.driver_0_0_volt_0,
+        &new_config.press_calibr.driver_0_1_volt_0,
+        &new_config.press_calibr.driver_0_2_volt_0,
+        &new_config.press_calibr.driver_0_3_volt_0,
+        &new_config.press_calibr.driver_1_0_volt_0,
+        &new_config.press_calibr.driver_1_1_volt_0,
+        &new_config.press_calibr.driver_1_2_volt_0,
+        &new_config.press_calibr.driver_1_3_volt_0
+    };
+
+    for (int i = 0; i < ADS1115_QUANTITY; i++) {
+        for (int j = 0; j < PRESSURE_DRIVER_SENSOR_COUNT; j++) {
+            ret = pressure_driver_read_voltage(&config.pressure_driver[i], j, &voltage);
+            if (ret != PRESSURE_DRIVER_OK) {
+                printf("Calibration failed while reading voltage from driver '%d' (out of %d), sensor '%d' (out of %d).", i+1, ADS1115_QUANTITY, j+1, PRESSURE_DRIVER_SENSOR_COUNT);
+                return 0;
+            }
+
+            *config_fields[4*i + j] = voltage;
+        }
+    }
+    flash_edit_config(new_config);
+
+    printf("Successfully calibrated all sensors for pressure of 0 bars. Use `display_config` to see calibration values. Remember to use `save_config` to save and apply your changes\n");
     return 0;
 }
 
@@ -231,7 +267,7 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
         },
         {
             .cmd = {
-                .command  = "temp-read",
+                .command  = "temp_read",
                 .help     = "Read temperature from BoardData.",
                 .hint     = NULL,
                 .func     = read_temperature
@@ -295,6 +331,14 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
                 .hint = NULL,
                 .func = print_pressures,
                 .argtable = NULL
+            }
+        },
+        {
+            .cmd = {
+                .command  = "press_tare",
+                .help     = "Calibrte all pressure sensors for 0 bar",
+                .hint     = NULL,
+                .func     = press_tare
             }
         }
     };

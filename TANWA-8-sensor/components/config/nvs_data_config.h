@@ -12,27 +12,27 @@
     SECTION_BEGIN(press_calibr)                                                 \
     DATA(driver_0_0_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
     DATA(driver_0_0_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
-    DATA(driver_0_0_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
+    DATA(driver_0_0_press_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
     DATA(driver_0_1_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
     DATA(driver_0_1_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
-    DATA(driver_0_1_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
+    DATA(driver_0_1_press_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
     DATA(driver_0_2_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
     DATA(driver_0_2_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
-    DATA(driver_0_2_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
+    DATA(driver_0_2_press_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
     DATA(driver_0_3_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
     DATA(driver_0_3_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
-    DATA(driver_0_3_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
+    DATA(driver_0_3_press_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
     DATA(driver_1_0_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
     DATA(driver_1_0_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
-    DATA(driver_1_0_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
+    DATA(driver_1_0_press_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
     DATA(driver_1_1_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
     DATA(driver_1_1_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
-    DATA(driver_1_1_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
+    DATA(driver_1_1_press_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
     DATA(driver_1_2_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
     DATA(driver_1_2_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
-    DATA(driver_1_2_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
+    DATA(driver_1_2_press_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
     DATA(driver_1_3_volt_0, float, PRESSURE_DRIVER_DEFAULT_ZERO_VOLTAGE)        \
     DATA(driver_1_3_volt_1, float, PRESSURE_DRIVER_DEFAULT_MAX_VOLTAGE)         \
-    DATA(driver_1_3_press_0, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
+    DATA(driver_1_3_press_1, float, PRESSURE_DRIVER_DEFAULT_MAX_PRESSURE)       \
     SECTION_END(press_calibr)
 // jeżeli ktokolwiek usunie tą linie to kompilator zacznie drzeć ryja, chyba że dodasz pustą linię po ostatniej definicji :)
