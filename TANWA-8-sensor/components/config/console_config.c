@@ -158,6 +158,7 @@ int calibrate_sensor(int argc, char **argv) {
         return 0;
     }
 
+    // TODO IMPORTANT!!! Adjust drivers with sesore, they DO NOT corelate rn
     struct {
         const char *key;
         float *ptrs[2];
