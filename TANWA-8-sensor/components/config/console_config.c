@@ -164,7 +164,7 @@ int calibrate_sensor(int argc, char **argv) {
     } sensor_map[] = {
         {"N2_ZF",               {&new_config.press_calibr.driver_0_0_volt_1, &new_config.press_calibr.driver_0_0_press_1}},
         {"DRD_N2",              {&new_config.press_calibr.driver_0_1_volt_1, &new_config.press_calibr.driver_0_1_press_1}},
-        {"DRD_N20",             {&new_config.press_calibr.driver_0_2_volt_1, &new_config.press_calibr.driver_0_2_press_1}},
+        {"DRD_N2O",             {&new_config.press_calibr.driver_0_2_volt_1, &new_config.press_calibr.driver_0_2_press_1}},
         {"BLANK",               {&new_config.press_calibr.driver_0_3_volt_1, &new_config.press_calibr.driver_0_3_press_1}},
         {"CUT-OFF_ZA_FILLEM",   {&new_config.press_calibr.driver_1_0_volt_1, &new_config.press_calibr.driver_1_0_press_1}},
         {"N2_ZR",               {&new_config.press_calibr.driver_1_1_volt_1, &new_config.press_calibr.driver_1_1_press_1}},
