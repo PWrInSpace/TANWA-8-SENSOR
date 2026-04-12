@@ -160,33 +160,33 @@ esp_err_t board_config_init(void) {
 
     //#################-----DROID N2-----#####################
     config.pressure_driver[0].sensors[1].pressure_max = 25.0;
-    config.pressure_driver[0].sensors[1].voltage_min = 0.366;
-    config.pressure_driver[0].sensors[1].voltage_max = 2.8;
+    config.pressure_driver[0].sensors[1].voltage_min = 0.370;
+    config.pressure_driver[0].sensors[1].voltage_max = 3.25;
 
     //#################-----DROID N2O-----#####################
     config.pressure_driver[0].sensors[2].pressure_max = 25.0;
-    config.pressure_driver[0].sensors[2].voltage_min = 0.317;
-    config.pressure_driver[0].sensors[2].voltage_max = 2.706;
+    config.pressure_driver[0].sensors[2].voltage_min = 0.370;
+    config.pressure_driver[0].sensors[2].voltage_max = 3.25;
 
     //#################-----CUT-OFF N2O-----#####################
     config.pressure_driver[1].sensors[0].pressure_max = 350; 
     config.pressure_driver[1].sensors[0].voltage_min = 0.370;
-    config.pressure_driver[1].sensors[0].voltage_max = 3.4; 
+    config.pressure_driver[1].sensors[0].voltage_max = 3.25; 
 
      //#################-----N2-ZA REDUKTOREM-----#####################
     config.pressure_driver[1].sensors[1].pressure_max = 350.0;
-    config.pressure_driver[1].sensors[1].voltage_min = 0.368; 
-    config.pressure_driver[1].sensors[1].voltage_max = 3.085;
+    config.pressure_driver[1].sensors[1].voltage_min = 0.375; 
+    config.pressure_driver[1].sensors[1].voltage_max = 3.26;
 
      //#################-----N2-PRZED-REDUKTOREM-----#####################
     config.pressure_driver[1].sensors[2].pressure_max = 350.0;
-    config.pressure_driver[1].sensors[2].voltage_min = 0.368;
-    config.pressure_driver[1].sensors[2].voltage_max = 3.085;
+    config.pressure_driver[1].sensors[2].voltage_min = 0.372;
+    config.pressure_driver[1].sensors[2].voltage_max = 3.24;
         
      //#################-----N2O-ZA-FILLEM-----#####################
     config.pressure_driver[1].sensors[3].pressure_max = 100.0;
-    config.pressure_driver[1].sensors[3].voltage_min = 0.361;
-    config.pressure_driver[1].sensors[3].voltage_max = 3.245;
+    config.pressure_driver[1].sensors[3].voltage_min = 0.369;
+    config.pressure_driver[1].sensors[3].voltage_max = 3.25;
 
     uint8_t fault_val;
     
