@@ -25,14 +25,14 @@ int print_pressures() {
     printf("\033[1;36m|----|-------------------------|-----------------|-------------------|\033[0m\n");
 
     // Formatowanie: ID | Nazwa (23 znaki) | Napięcie (10.4f) | Ciśnienie (10.3f)
-    printf("| P1 | %-23s | \033[1;32m%10.4f V\033[0m    | \033[1;33m%10.3f bar\033[0m    |\n", "CUT-OFF N2O",      BoardData.voltage[4], BoardData.pressure[4]);
-    printf("| P2 | %-23s | \033[1;32m%10.4f V\033[0m    | \033[1;33m%10.3f bar\033[0m    |\n", "N2O ZA FILLEM",    BoardData.voltage[7], BoardData.pressure[7]);
-    printf("| P3 | %-23s | \033[1;32m%10.4f V\033[0m    | \033[1;33m%10.3f bar\033[0m    |\n", "N2 PR",           BoardData.voltage[6], BoardData.pressure[6]);
-    printf("| P4 | %-23s | \033[1;32m%10.4f V\033[0m    | \033[1;33m%10.3f bar\033[0m    |\n", "N2 ZR",           BoardData.voltage[5], BoardData.pressure[5]);
-    printf("| P5 | %-23s | \033[1;32m%10.4f V\033[0m    | \033[1;33m%10.3f bar\033[0m    |\n", "N2 ZF",           BoardData.voltage[0], BoardData.pressure[0]);
-    printf("| P6 | %-23s | \033[1;32m%10.4f V\033[0m    | \033[1;33m%10.3f bar\033[0m    |\n", "BLANK",           BoardData.voltage[3], BoardData.pressure[3]);
-    printf("| P7 | %-23s | \033[1;32m%10.4f V\033[0m    | \033[1;33m%10.3f bar\033[0m    |\n", "DRD N2O",         BoardData.voltage[2], BoardData.pressure[2]);
-    printf("| P8 | %-23s | \033[1;32m%10.4f V\033[0m    | \033[1;33m%10.3f bar\033[0m    |\n", "DRD N2",          BoardData.voltage[1], BoardData.pressure[1]);
+    printf("| P1 | %-23s |\033[1;32m%10.4f V\033[0m     |\033[1;33m%10.3f bar\033[0m     |\n", "CUT-OFF",         BoardData.voltage[4], BoardData.pressure[4]);
+    printf("| P2 | %-23s |\033[1;32m%10.4f V\033[0m     |\033[1;33m%10.3f bar\033[0m     |\n", "N2O ZA FILLEM",   BoardData.voltage[7], BoardData.pressure[7]);
+    printf("| P3 | %-23s |\033[1;32m%10.4f V\033[0m     |\033[1;33m%10.3f bar\033[0m     |\n", "N2 PR",           BoardData.voltage[6], BoardData.pressure[6]);
+    printf("| P4 | %-23s |\033[1;32m%10.4f V\033[0m     |\033[1;33m%10.3f bar\033[0m     |\n", "N2 ZR",           BoardData.voltage[5], BoardData.pressure[5]);
+    printf("| P5 | %-23s |\033[1;32m%10.4f V\033[0m     |\033[1;33m%10.3f bar\033[0m     |\n", "N2 ZF",           BoardData.voltage[0], BoardData.pressure[0]);
+    printf("| P6 | %-23s |\033[1;32m%10.4f V\033[0m     |\033[1;33m%10.3f bar\033[0m     |\n", "BLANK",           BoardData.voltage[3], BoardData.pressure[3]);
+    printf("| P7 | %-23s |\033[1;32m%10.4f V\033[0m     |\033[1;33m%10.3f bar\033[0m     |\n", "DRD N2O",         BoardData.voltage[2], BoardData.pressure[2]);
+    printf("| P8 | %-23s |\033[1;32m%10.4f V\033[0m     |\033[1;33m%10.3f bar\033[0m     |\n", "DRD N2",          BoardData.voltage[1], BoardData.pressure[1]);
 
     printf("\033[1;36m\\====================================================================/\033[0m\n\n");
     fflush(stdout);
