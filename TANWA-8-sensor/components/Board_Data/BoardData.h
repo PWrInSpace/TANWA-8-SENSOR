@@ -2,14 +2,14 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "stdbool.h"
-
+#include "esp_err.h"
 
 typedef struct {
     float temperature[3];
     float status_temp;
     float humidity;
     float pressure[8];
-
+    float voltage[8];
 } BoardData_t;
 
 extern BoardData_t BoardData;

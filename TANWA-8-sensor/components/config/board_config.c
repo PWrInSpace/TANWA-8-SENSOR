@@ -84,8 +84,8 @@ board_config_t config =
         ._i2c_read = _mcu_i2c_read,
         .i2c_address = 0x48,
     },
-    .pressure_driver[0] = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115[0]),
-    .pressure_driver[1] = PRESSURE_DRIVER_TANWA_CONFIG(&config.ads1115[1]),
+    .pressure_driver[0] = PRESSURE_DRIVER_TANWA_CONFIG1(&config.ads1115[0]),
+    .pressure_driver[1] = PRESSURE_DRIVER_TANWA_CONFIG2(&config.ads1115[1]),
     .hdc = {
         .i2c_address = HDC1080_I2C_ADDRESS,
         ._i2c_write = _mcu_i2c_write,

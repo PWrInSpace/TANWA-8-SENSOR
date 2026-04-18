@@ -38,7 +38,7 @@ void measure_task(void*){
          if (xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(10)) == pdTRUE) {
     
         tmp1075_status_t ret = tmp1075_get_temp_celsius(&(config.tmp1075), &BoardData.status_temp);
-        pressure_driver_read_pressures(&(config.pressure_driver[1]),BoardData.pressure);
+       // pressure_driver_read_pressures(&(config.pressure_driver[1]),BoardData.pressure, BoardData.voltage);
         float pressure = 0;
         float pressure2 = 0;
         float pressure3 = 0;
@@ -47,8 +47,8 @@ void measure_task(void*){
         //pressure_driver_read_pressure(&(config.pressure_driver[0]), 1,&pressure2);
         //pressure_driver_read_pressure(&(config.pressure_driver[0]), 2,&pressure3);
         //pressure_driver_read_pressure(&(config.pressure_driver[0]), 3,&pressure4);
-        pressure_driver_read_pressures(&(config.pressure_driver[0]),BoardData.pressure);
-        pressure_driver_read_pressures(&(config.pressure_driver[1]),BoardData.pressure + 4);
+        pressure_driver_read_pressures(&(config.pressure_driver[0]),BoardData.pressure, BoardData.voltage);
+        pressure_driver_read_pressures(&(config.pressure_driver[1]),BoardData.pressure + 4, BoardData.voltage + 4);
         BoardData.temperature[0] = (thermocouple_read_temperature(&config.thermocouple[0]));
         BoardData.temperature[1]= (thermocouple_read_temperature(&config.thermocouple[1]));
         BoardData.temperature[2] = (thermocouple_read_temperature(&config.thermocouple[2]));

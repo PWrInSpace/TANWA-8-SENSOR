@@ -13,27 +13,28 @@
 #include "console_config.h"
 #include "board_config.h"
 #include "BoardData.h"
+#include <stdlib.h>
 
 #define TAG "CONSOLE_CONFIG"
 
 // |--- Miscellaneous comands ---|
 
 int print_pressures() {
-    printf("\n\033[1;36m/==================== PRESSURE MONITOR ====================\\\033[0m\n");
-    printf("\033[1;36m| ID |       SENSOR NAME       |      VALUE [bar]      |\033[0m\n");
-    printf("\033[1;36m|----|-------------------------|-----------------------|\033[0m\n");
+    printf("\n\033[1;36m/========================= PRESSURE MONITOR =========================\\\033[0m\n");
+    printf("\033[1;36m| ID |       SENSOR NAME       |   VOLTAGE [V]   |    VALUE [bar]    |\033[0m\n");
+    printf("\033[1;36m|----|-------------------------|-----------------|-------------------|\033[0m\n");
 
-    
-    printf("| P1 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "CUT-OFF N2O",      BoardData.pressure[4]);
-    printf("| P2 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "N2O ZA FILLEM",    BoardData.pressure[7]);
-    printf("| P3 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "N2 PR",           BoardData.pressure[6]);
-    printf("| P4 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "N2 ZR",           BoardData.pressure[5]);
-    printf("| P5 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "N2 ZF",           BoardData.pressure[0]);
-    printf("| P6 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "BLANK",           BoardData.pressure[3]);
-    printf("| P7 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "DRD N2O",         BoardData.pressure[2]);
-    printf("| P8 | %-23s | \033[1;33m%10.3f bar\033[0m |\n", "DRD N2",          BoardData.pressure[1]);
+    // Formatowanie: ID | Nazwa (23 znaki) | Napięcie (10.4f) | Ciśnienie (10.3f)
+    printf("| P1 | %-23s | \033[1;32m%10.4f V\033[0m   | \033[1;33m%10.3f bar\033[0m |\n", "CUT-OFF N2O",      BoardData.voltage[4], BoardData.pressure[4]);
+    printf("| P2 | %-23s | \033[1;32m%10.4f V\033[0m   | \033[1;33m%10.3f bar\033[0m |\n", "N2O ZA FILLEM",    BoardData.voltage[7], BoardData.pressure[7]);
+    printf("| P3 | %-23s | \033[1;32m%10.4f V\033[0m   | \033[1;33m%10.3f bar\033[0m |\n", "N2 PR",           BoardData.voltage[6], BoardData.pressure[6]);
+    printf("| P4 | %-23s | \033[1;32m%10.4f V\033[0m   | \033[1;33m%10.3f bar\033[0m |\n", "N2 ZR",           BoardData.voltage[5], BoardData.pressure[5]);
+    printf("| P5 | %-23s | \033[1;32m%10.4f V\033[0m   | \033[1;33m%10.3f bar\033[0m |\n", "N2 ZF",           BoardData.voltage[0], BoardData.pressure[0]);
+    printf("| P6 | %-23s | \033[1;32m%10.4f V\033[0m   | \033[1;33m%10.3f bar\033[0m |\n", "BLANK",           BoardData.voltage[3], BoardData.pressure[3]);
+    printf("| P7 | %-23s | \033[1;32m%10.4f V\033[0m   | \033[1;33m%10.3f bar\033[0m |\n", "DRD N2O",         BoardData.voltage[2], BoardData.pressure[2]);
+    printf("| P8 | %-23s | \033[1;32m%10.4f V\033[0m   | \033[1;33m%10.3f bar\033[0m |\n", "DRD N2",          BoardData.voltage[1], BoardData.pressure[1]);
 
-    printf("\033[1;36m\\==========================================================/\033[0m\n\n");
+    printf("\033[1;36m\\====================================================================/\033[0m\n\n");
     fflush(stdout);
     return 0;
 }
@@ -119,6 +120,12 @@ static esp_err_t parse_float(const char *value, float *out) {
     return ESP_OK;
 }
 
+int compare_floats(const void *a, const void *b) {
+    float fa = *(const float *)a;
+    float fb = *(const float *)b;
+    return (fa > fb) - (fa < fb);
+}
+
 int calibrate_sensor(int argc, char **argv) {
     if (argc < 3) {
         print_cmd_usage(argv[0]);
@@ -137,6 +144,7 @@ int calibrate_sensor(int argc, char **argv) {
     } else if (argc == 3) {
         field = argv[1];
         value = argv[2];
+
     }
 
     if (!field || !value) {
@@ -166,7 +174,7 @@ int calibrate_sensor(int argc, char **argv) {
         {"DRD_N2",              {&new_config.press_calibr.driver_0_1_volt_1, &new_config.press_calibr.driver_0_1_press_1}},
         {"DRD_N2O",             {&new_config.press_calibr.driver_0_2_volt_1, &new_config.press_calibr.driver_0_2_press_1}},
         {"BLANK",               {&new_config.press_calibr.driver_0_3_volt_1, &new_config.press_calibr.driver_0_3_press_1}},
-        {"CUT-OFF_ZA_FILLEM",   {&new_config.press_calibr.driver_1_0_volt_1, &new_config.press_calibr.driver_1_0_press_1}},
+        {"CUT_OFF",   {&new_config.press_calibr.driver_1_0_volt_1, &new_config.press_calibr.driver_1_0_press_1}},
         {"N2_ZR",               {&new_config.press_calibr.driver_1_1_volt_1, &new_config.press_calibr.driver_1_1_press_1}},
         {"N2_PR",               {&new_config.press_calibr.driver_1_2_volt_1, &new_config.press_calibr.driver_1_2_press_1}},
         {"N2O_ZA_FILLEM",       {&new_config.press_calibr.driver_1_3_volt_1, &new_config.press_calibr.driver_1_3_press_1}}
@@ -190,10 +198,38 @@ int calibrate_sensor(int argc, char **argv) {
     }
 
     float voltage;
-    pressure_driver_read_voltage(&config.pressure_driver[sensor_num/4], sensor_num%4, &voltage);
-    *voltage_1 = voltage;
-    *pressure_1 = press;
+    int iterations_num = 10;
+    float median_voltage = 0;
+    float voltage_readings[iterations_num];
+    for (int i = 0; i < iterations_num; i++) {
+        pressure_driver_status_t ret = pressure_driver_read_voltage(&config.pressure_driver[sensor_num/4], sensor_num%4, &voltage);
+        if (ret != PRESSURE_DRIVER_OK) {
+            printf("Calibration failed while reading voltage from driver '%d' (out of %d), sensor '%d' (out of %d).", sensor_num/4 + 1, ADS1115_QUANTITY, sensor_num%4 + 1, PRESSURE_DRIVER_SENSOR_COUNT);
+            return 0;
+        }
+        voltage_readings[i] = voltage;
+        vTaskDelay(pdMS_TO_TICKS(10)); // small delay between readings to allow for some variation in voltage readings
+    }
 
+    qsort(voltage_readings, iterations_num, sizeof(float), compare_floats);
+    if (iterations_num % 2 == 0) {
+        median_voltage = (voltage_readings[iterations_num/2 - 1] + voltage_readings[iterations_num/2]) / 2;
+    } else {
+        median_voltage = voltage_readings[iterations_num/2];
+    }
+    vTaskDelay(pdMS_TO_TICKS(100)); // small delay to ensure all voltage readings are done before we print the median value
+    ESP_LOGI(TAG, "Median voltage from %d readings: %g", iterations_num, median_voltage);
+    *voltage_1 = median_voltage; // Użyj wyliczonej mediany!
+*pressure_1 = press;
+    //print all median values nicelly from 40 to 60 to see if its sorted on center
+    ESP_LOGI(TAG, "Voltage readings for sensor '%s':", field);
+    for (int i = 0; i < iterations_num; i++) {
+        ESP_LOGI(TAG, "%d: %g", i+1, voltage_readings[i]);
+        ESP_LOGI(TAG, "ADC pin mux num: %d",config.pressure_driver[sensor_num/4].sensors[sensor_num%4].adc_pin);
+                    
+
+    }   
+    ESP_LOGI(TAG, "Calibrating sensor '%s' with voltage %g for pressure %g bars", field, voltage, press);
     flash_edit_config(new_config);
     pressure_driver_set_1_voltage(&config.pressure_driver[sensor_num/4], sensor_num%4, voltage);
     pressure_driver_set_1_pressure(&config.pressure_driver[sensor_num/4], sensor_num%4, press);
