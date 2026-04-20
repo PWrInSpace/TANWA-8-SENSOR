@@ -51,7 +51,7 @@ esp_err_t send_press_data_handler(uint8_t *data, uint8_t length) {
 
 esp_err_t send_temp_data_handler(uint8_t *data, uint8_t length) {
 
-    ESP_LOGI(TAG, "############CAN READ TEMP#############");
+   // ESP_LOGI(TAG, "############CAN READ TEMP#############");
     int16_t temperature[3] = {0};
     uint8_t pt100_temp[2] = {35, 35};
     uint8_t frame[8] = {0};
