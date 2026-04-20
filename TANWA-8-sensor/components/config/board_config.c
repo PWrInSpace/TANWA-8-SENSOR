@@ -40,6 +40,7 @@
 #include "mcu_gpio_config.h"
 #include "mcu_i2c_config.h"
 #include "mcu_spi_config.h"
+#include "sd_card_config.h"
 #include "pinout.h"
 
 #define IOEXP_MODE (IOCON_INTCC | IOCON_INTPOL | IOCON_ODR | IOCON_MIRROR)
@@ -147,6 +148,13 @@ esp_err_t board_config_init(void) {
         return err;
     }
     ESP_LOGI(TAG, "Pressure sensors init successful");
+
+    bool ret = initialize_sd();
+    if (ret != true) {
+        ESP_LOGE(TAG, "SD card initialization failed");
+        return err;
+    }
+    ESP_LOGI(TAG, "SD card init successful");
     
     err = console_config_init();
     if (err != ESP_OK) {

@@ -10,6 +10,7 @@
 #include "max31856.h"
 
 #include "measure_task.h"
+#include "sd_card_config.h"
 
 #define TAG "APP"
 extern board_config_t config;
