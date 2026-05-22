@@ -17,7 +17,7 @@ esp_err_t parse_float_to_int16_t(float * input, size_t size, int16_t *output)
     }
     return ESP_OK;
 }
-// Handler function definitions
+
 esp_err_t send_board_status_handler(uint8_t *data, uint8_t length) 
     {
    // xSemaphoreTake(BoardDataSemaphore, pdMS_TO_TICKS(10));
