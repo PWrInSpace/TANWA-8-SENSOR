@@ -15,6 +15,7 @@
 #include "max31856.h"
 #include "BoardData.h"
 #include "hdc1080.h"
+#include "sd_task.h"
 
 #define TAG "MEASURE_TASK"
 float temperature;
@@ -50,8 +51,10 @@ void measure_task(void*){
         pressure_driver_read_pressures(&(config.pressure_driver[0]),BoardData.pressure, BoardData.voltage);
         pressure_driver_read_pressures(&(config.pressure_driver[1]),BoardData.pressure + 4, BoardData.voltage + 4);
         BoardData.temperature[0] = (thermocouple_read_temperature(&config.thermocouple[0]));
-        BoardData.temperature[1]= (thermocouple_read_temperature(&config.thermocouple[1]));
+        BoardData.temperature[1] = (thermocouple_read_temperature(&config.thermocouple[1]));
         BoardData.temperature[2] = (thermocouple_read_temperature(&config.thermocouple[2]));
+
+        SDT_send_data(&BoardData, sizeof(BoardData));
 
         //print_pressures();
         
