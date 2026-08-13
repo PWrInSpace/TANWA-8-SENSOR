@@ -108,11 +108,10 @@ bool SD_write(sd_card_t *sd_card, const char* path, const char* data, size_t len
         return false;
     }
 
-    int written_bytes = 0;
-    written_bytes = fprintf(file, data, sd_card->card->cid.name);
+    size_t written_bytes = fwrite(data, 1, length, file);
     fclose(file);
 
-    if (written_bytes < 1) {
+    if (written_bytes < length) {
         ESP_LOGE(TAG, "UNABLE TO WRITE DATA TO SD CARD");
         return false;
     }

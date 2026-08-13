@@ -36,7 +36,7 @@ bool initialize_sd(void) {
         .priority = CONFIG_SD_TASK_PRIORITY,
         .core_id = CONFIG_SD_TASK_CORE_ID,
         .error_handler_fnc = on_error,
-        .data_size = 64, // WARNING! Change to actuall size
+        .data_size = 64, // WARNING! Change to actual size
         .create_sd_frame_fnc = convert_data_to_frame,
         .spi_mutex = mutex_spi,
     };

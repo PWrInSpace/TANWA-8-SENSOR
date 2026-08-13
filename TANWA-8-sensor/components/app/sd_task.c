@@ -61,6 +61,15 @@ static void prepare_data_file_and_save(void) {
     FILE *data_file = fopen(mem.data_path, "a");
     xSemaphoreGive(mem.spi_mutex);
 
+    if (data_file == NULL) {
+        ESP_LOGE(TAG, "FILE OPEN ERROR %s", mem.data_path);
+        xSemaphoreTake(mem.spi_mutex, portMAX_DELAY);
+        SD_remount(&mem.sd_card);
+        xSemaphoreGive(mem.spi_mutex);
+        report_error(SD_WRITE);
+        return;
+    }
+
     int received_data_counter = 0;
     while (received_data_counter < SD_MAX_DATA_RECEIVE) {
         size_t item_size;
