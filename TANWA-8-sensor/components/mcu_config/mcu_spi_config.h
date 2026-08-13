@@ -28,10 +28,10 @@
 
 #define MCU_SPI_DEFAULT_CONFIG()                   \
   {                                                \
-    .host_id = SDSPI_DEFAULT_HOST,                          \
-    .bus_config = {.miso_io_num = 10,                \
-                   .mosi_io_num = 11, \
-                   .sclk_io_num = 9,                \
+    .host_id = SDSPI_DEFAULT_HOST,                 \
+    .bus_config = {.miso_io_num = 41,              \
+                   .mosi_io_num = 39,              \
+                   .sclk_io_num = 40,              \
                    .quadwp_io_num = -1,            \
                    .quadhd_io_num = -1,            \
                    .max_transfer_sz = 4000},       \
