@@ -19,7 +19,6 @@ static struct {
     void *data_from_queue;
     size_t data_from_queue_size;
     char data_buffer[SD_DATA_BUFFER_MAX_SIZE];
-    char log_buffer[SD_LOG_BUFFER_MAX_SIZE];
 
     char data_path[SD_PATH_SIZE];
     char log_path[SD_PATH_SIZE];
@@ -50,10 +49,10 @@ static bool write_to_sd(FILE *file, char *data, size_t size) {
     }
 
     xSemaphoreTake(mem.spi_mutex, portMAX_DELAY);
-    fwrite(data, 1, size, file);
+    size_t written = fwrite(data, 1, size, file);
     xSemaphoreGive(mem.spi_mutex);
 
-    return true;
+    return written == size;
 }
 
 static void prepare_data_file_and_save(void) {
@@ -70,32 +69,38 @@ static void prepare_data_file_and_save(void) {
         return;
     }
 
+    bool write_ok = true;
     int received_data_counter = 0;
     while (received_data_counter < SD_MAX_DATA_RECEIVE) {
         size_t item_size;
         void *item = xRingbufferReceive(mem.data_ringbuffer, &item_size, 0);
         if (item == NULL) break;
-        
+
         size_t frame_size = mem.create_sd_frame_fnc(mem.data_buffer, sizeof(mem.data_buffer), item, item_size);
-        if (write_to_sd(data_file, mem.data_buffer, frame_size) == false) {
-            xSemaphoreTake(mem.spi_mutex, portMAX_DELAY);
-            SD_remount(&mem.sd_card);
-            xSemaphoreGive(mem.spi_mutex);
-            report_error(SD_WRITE);
-        }
+        write_ok = write_to_sd(data_file, mem.data_buffer, frame_size);
 
         vRingbufferReturnItem(mem.data_ringbuffer, item);
         xSemaphoreTake(mem.ringbuffer_mutex, portMAX_DELAY);
         mem.data_items_count--;
         xSemaphoreGive(mem.ringbuffer_mutex);
-        
+
+        if (write_ok == false) {
+            report_error(SD_WRITE);
+            xSemaphoreTake(mem.spi_mutex, portMAX_DELAY);
+            SD_remount(&mem.sd_card);
+            xSemaphoreGive(mem.spi_mutex);
+            break;
+        }
+
         received_data_counter++;
         vTaskDelay(pdMS_TO_TICKS(1));
     }
 
-    xSemaphoreTake(mem.spi_mutex, portMAX_DELAY);
-    fclose(data_file);
-    xSemaphoreGive(mem.spi_mutex);
+    if (write_ok == true) {
+        xSemaphoreTake(mem.spi_mutex, portMAX_DELAY);
+        fclose(data_file);
+        xSemaphoreGive(mem.spi_mutex);
+    }
 }
 
 static bool check_sd_status(void) {
@@ -183,7 +188,9 @@ static void check_terminate_condition(void) {
         return;
     }
 
+    xSemaphoreTake(mem.data_write_mutex, portMAX_DELAY);
     prepare_data_file_and_save();
+    xSemaphoreGive(mem.data_write_mutex);
     log_check_and_save();
     terminate_task();
 }
@@ -381,7 +388,7 @@ bool SDT_send_log(char *data, size_t data_size) {
         return false;
     }
 
-    if (data_size > SD_DATA_BUFFER_MAX_SIZE) {
+    if (data_size > SD_LOG_BUFFER_MAX_SIZE) {
         return false;
     }
 
