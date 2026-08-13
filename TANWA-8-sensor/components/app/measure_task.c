@@ -4,6 +4,7 @@
 #include "esp_log.h"
 #include "esp_err.h"
 #include "esp_mac.h"
+#include "esp_timer.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -54,6 +55,8 @@ void measure_task(void*){
         BoardData.temperature[1] = (thermocouple_read_temperature(&config.thermocouple[1]));
         BoardData.temperature[2] = (thermocouple_read_temperature(&config.thermocouple[2]));
 
+        BoardData.timestamp = esp_timer_get_time();
+
         SDT_send_data(&BoardData, sizeof(BoardData));
 
         //print_pressures();
@@ -69,7 +72,7 @@ void measure_task(void*){
       //  printf("Termocouple_3 = %f\n", BoardData.temperature[2]);
        // hdc1080_read_temperature(&config.hdc);
         xSemaphoreGive(BoardDataSemaphore);
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(100));
 
         
     } else 

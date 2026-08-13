@@ -148,13 +148,6 @@ esp_err_t board_config_init(void) {
         return err;
     }
     ESP_LOGI(TAG, "Pressure sensors init successful");
-
-    bool ret = initialize_sd();
-    if (ret != true) {
-        ESP_LOGE(TAG, "SD card initialization failed");
-        return err;
-    }
-    ESP_LOGI(TAG, "SD card init successful");
     
     err = console_config_init();
     if (err != ESP_OK) {
@@ -162,36 +155,43 @@ esp_err_t board_config_init(void) {
         return err;
     }
     
-    // INIT THERMOCOUPLES
-    uint8_t fault_val;
+    // // INIT THERMOCOUPLES
+    // uint8_t fault_val;
     
-    ESP_LOGI(TAG, "Thermocouple initialization...");
-    max31856_init(&config.thermocouple[0], THERMOCOUPLE_CS1);
-    ESP_LOGI(TAG, "Thermocouple 1 DONE INIT");
-    max31856_init(&config.thermocouple[1], THERMOCOUPLE_CS2);
-    ESP_LOGI(TAG, "Thermocouple 2 DONE INIT");
-    max31856_init(&config.thermocouple[2], THERMOCOUPLE_CS3);
-    ESP_LOGI(TAG, "Thermocouple set type...");
+    // ESP_LOGI(TAG, "Thermocouple initialization...");
+    // max31856_init(&config.thermocouple[0], THERMOCOUPLE_CS1);
+    // ESP_LOGI(TAG, "Thermocouple 1 DONE INIT");
+    // max31856_init(&config.thermocouple[1], THERMOCOUPLE_CS2);
+    // ESP_LOGI(TAG, "Thermocouple 2 DONE INIT");
+    // max31856_init(&config.thermocouple[2], THERMOCOUPLE_CS3);
+    // ESP_LOGI(TAG, "Thermocouple set type...");
 
-    thermocouple_set_type(&config.thermocouple[0], MAX31856_TCTYPE_K);
-    thermocouple_set_type(&config.thermocouple[1], MAX31856_TCTYPE_K);
-    thermocouple_set_type(&config.thermocouple[2], MAX31856_TCTYPE_K);
-    ESP_LOGI(TAG, "Thermocouple read fault...");
+    // thermocouple_set_type(&config.thermocouple[0], MAX31856_TCTYPE_K);
+    // thermocouple_set_type(&config.thermocouple[1], MAX31856_TCTYPE_K);
+    // thermocouple_set_type(&config.thermocouple[2], MAX31856_TCTYPE_K);
+    // ESP_LOGI(TAG, "Thermocouple read fault...");
 
-    fault_val = thermocouple_read_fault(&config.thermocouple[0], true);
-    if (fault_val == 1) {
-        return ESP_FAIL;
+    // fault_val = thermocouple_read_fault(&config.thermocouple[0], true);
+    // if (fault_val == 1) {
+    //     return ESP_FAIL;
+    // }
+
+    // fault_val = thermocouple_read_fault(&config.thermocouple[1], true);
+    // if (fault_val == 1) {
+    //    return ESP_FAIL;
+    // }
+
+    // fault_val = thermocouple_read_fault(&config.thermocouple[2], true);
+    // if (fault_val == 1) {
+    //     return ESP_FAIL;
+    // }
+
+    bool ret = initialize_sd();
+    if (ret != true) {
+        ESP_LOGE(TAG, "SD card initialization failed");
+        return err;
     }
-
-    fault_val = thermocouple_read_fault(&config.thermocouple[1], true);
-    if (fault_val == 1) {
-       return ESP_FAIL;
-    }
-
-    fault_val = thermocouple_read_fault(&config.thermocouple[2], true);
-    if (fault_val == 1) {
-        return ESP_FAIL;
-    }
+    ESP_LOGI(TAG, "SD card init successful");
     
     //hd1080_init(&config.hdc);
     return ESP_OK;

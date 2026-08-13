@@ -5,6 +5,7 @@
 #include "esp_err.h"
 
 typedef struct {
+    uint64_t timestamp;
     float temperature[3];
     float status_temp;
     float humidity;
