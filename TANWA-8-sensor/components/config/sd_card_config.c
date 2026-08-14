@@ -35,7 +35,7 @@ static size_t convert_data_to_frame(char *buf, size_t buf_size, void* data, size
     }
 
     int n = snprintf(buf + offset, buf_size - offset,
-        "%d,%.3f,%.3f,%.3f,%.3f,%.3f,"
+        "%llu,%.3f,%.3f,%.3f,%.3f,%.3f,"
         "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,"
         "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f\n",
         bd->timestamp,
