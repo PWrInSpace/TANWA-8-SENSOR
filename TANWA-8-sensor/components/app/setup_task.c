@@ -35,7 +35,7 @@ void setup_task(void *arg) {
 }
 
 esp_err_t setup_task_init(void) {
-    if (xTaskCreatePinnedToCore(setup_task, "setup_task", 4096, NULL, 0, &setup_task_handle, 0) == pdPASS) {
+    if (xTaskCreatePinnedToCore(setup_task, "setup_task", 8192, NULL, 0, &setup_task_handle, 0) == pdPASS) {
         ESP_LOGI(TAG, "Setup task created successfully");
         return ESP_OK;
     } else {
