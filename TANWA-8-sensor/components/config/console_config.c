@@ -510,7 +510,7 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
         },
         {
             .cmd = {
-                .command  = "read_flash",
+                .command  = "flash_read",
                 .help     = "Reads and displays saved data in flash memory.",
                 .hint     = NULL,
                 .func     = read_flash
@@ -518,7 +518,7 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
         },
         {
             .cmd = {
-                .command  = "display_config",
+                .command  = "flash_display_config",
                 .help     = "Displays current state of runtime config.\nThis command does NOT display flash memory contents, to see current flash memory contents use `read_flash`.",
                 .hint     = NULL,
                 .func     = get_runtime_config
@@ -526,7 +526,7 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
         },
         {
             .cmd = {
-                .command  = "save_config",
+                .command  = "flash_save_config",
                 .help     = "Saves runtime config edited by User to flash memory.",
                 .hint     = NULL,
                 .func     = save_flash
@@ -534,7 +534,7 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
         },
         {
             .cmd = {
-                .command  = "edit_config",
+                .command  = "flash_edit_config",
                 .help     = "Sets the provided field in runtime config to provided value.",
                 .hint     = NULL,
                 .func     = edit_flash,
@@ -544,7 +544,7 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
         },
         {
             .cmd = {
-                .command  = "restore_config",
+                .command  = "flash_restore_config",
                 .help     = "Restores all default values and saves them into runtime config.\nUse `save_config` to save the runtime config to flash memory.",
                 .hint     = NULL,
                 .func     = restore_defaults
@@ -552,7 +552,7 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
         },
         {
             .cmd = {
-                .command  = "erase_flash",
+                .command  = "flash_erase",
                 .help     = "Erases flash memory partition that is holding config data.\nTo erase stored data you need to type `erase_flash Y` to ensure that flash won't be erased by accident.\nThere is no need to run `save_flash` after this function finishes.",
                 .hint     = NULL,
                 .func     = erase_flash,
@@ -569,8 +569,8 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
         },
         {
             .cmd = {
-                .command  = "press_tare",
-                .help     = "Calibrate all or chosen pressure sensors for 0 bar",
+                .command  = "tare",
+                .help     = "Calibrate all or chosen pressure sensors for 0 bar.",
                 .hint     = NULL,
                 .func     = press_tare,
                 .argtable = &press_tare_args
@@ -579,7 +579,7 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
         },
         {
             .cmd = {
-                .command  = "calibr_sensor",
+                .command  = "calibrate",
                 .help     = "Resets this device.",
                 .hint     = NULL,
                 .func     = calibrate_sensor,
