@@ -572,8 +572,7 @@ static void pp_periodic_task(void *arg) {
 
     while (!pp_stop_flag) {
         print_pressures();
-        printf("---------------------------------------------------\n");
-        vTaskDelay(pdMS_TO_TICKS(500));
+        vTaskDelay(pdMS_TO_TICKS(1500));
     }
 
     pp_task_handle = NULL;
