@@ -39,7 +39,7 @@ esp_err_t send_press_data_handler(uint8_t *data, uint8_t length) {
   memcpy(pressure_1_frame, &pressure[0], sizeof(pressure_1_frame));
   memcpy(pressure_2_frame, &pressure[4], sizeof(pressure_2_frame));
 
-  ESP_LOGI(TAG, "############CAN READ PRESSURE#############");
+  //ESP_LOGI(TAG, "############CAN READ PRESSURE#############");
   can_send_message(CAN_SEND_PRESS_DATA_1, pressure_1_frame,
                    sizeof(pressure_1_frame));
   can_send_message(CAN_SEND_PRESS_DATA_2, pressure_2_frame,
