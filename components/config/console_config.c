@@ -18,6 +18,9 @@
 
 #define TAG "CONSOLE_CONFIG"
 
+static TaskHandle_t pp_task_handle = NULL;
+static volatile bool pp_stop_flag = false;
+
 // |--- Miscellaneous comands ---|
 
 int print_pressures() {
@@ -564,6 +567,38 @@ void edit_flash_completion(const char *buf, linenoiseCompletions *lc) {
   }
 }
 
+static void pp_periodic_task(void *arg) {
+    pp_stop_flag = false;
+
+    while (!pp_stop_flag) {
+        print_pressures();
+        vTaskDelay(pdMS_TO_TICKS(1500));
+    }
+
+    pp_task_handle = NULL;
+    ESP_LOGI(TAG, "Periodic pressure printing stopped");
+    vTaskDelete(NULL);
+}
+
+int start_pp_cmd(int argc, char **argv) {
+    (void)argc;
+    (void)argv;
+
+    if (pp_task_handle != NULL) {
+        pp_stop_flag = true;
+        ESP_LOGI(TAG, "Stopping periodic pressure printing...");
+        return 0;
+    }
+    
+    if (xTaskCreate(pp_periodic_task, "pp_task", 4096, NULL, 5, &pp_task_handle) != pdPASS) {
+        ESP_LOGE(TAG, "Failed to create pp task");
+        return 0;
+    }
+
+    ESP_LOGI(TAG, "Periodic pressure printing started (every 0.5s). Type 'start_pp' again to stop.");
+    return 0;
+}
+
 static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
   // setup argtables for commands that need them
   edit_flash_args.field =
@@ -660,7 +695,12 @@ static esp_err_t setup_commands(int *cmd_count, console_cmd_ex_t **cmd_list) {
                .help =
                    "Prints temperatures read from sensors in a nice format.",
                .hint = NULL,
-               .func = print_temperatures}}};
+               .func = print_temperatures}
+      },
+      {.cmd = {.command = "start_pp",
+         .help = "Toggle periodic pressure printing (every 0.5s).",
+         .hint = NULL,
+         .func = start_pp_cmd}}};
 
   *cmd_count = sizeof(cmd) / sizeof(cmd[0]);
   *cmd_list = cmd;
